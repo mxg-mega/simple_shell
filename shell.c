@@ -16,11 +16,11 @@ size_t read_command(char **buffer, size_t *nbyte, FILE *fd)
 	return (getCommand);
 }
 /**
-  * main - Super Simple shell
-  * 
-  * Return: Always 0
+  * run - runs the shell by reading and executing
+  *
+  * Return: non yet
   */
-int main(void)
+void run()
 {
 	char *buffer;
 	size_t nbyte = BUFF_SIZE;
@@ -47,6 +47,15 @@ int main(void)
 			exit(99);
 		}
 	}
+}
+/**
+  * main - Super Simple shell
+  * 
+  * Return: Always 0
+  */
+int main(void)
+{
+	run();
 	return (0);
 }
 
