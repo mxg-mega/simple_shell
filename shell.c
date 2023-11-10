@@ -1,5 +1,7 @@
 #include "main.h"
 
+#define MAX_ARGS 64
+
 /**
   * main - a super simple shell
   *
@@ -7,13 +9,16 @@
   */
 int main(void)
 {
-	int i;
 
-	i = 0;
-	while (i != 1){
-		size_t read, buff_size = 1024;
-		pid_t child;
-		int status;
+	size_t read, buff_size = 1024;
+	pid_t child;
+	int status;
+
+	while (1){
+
+		char *buffer, *delimiter = " ", *token;
+		unsigned int i, bufflen;
+		char *argv[MAX_ARGS + 1] = {NULL};
 
 		child = fork();
 		if (child == -1)
@@ -23,18 +28,13 @@ int main(void)
 		}
 		if (child == 0)
 		{
-			char *buffer, *delimiter = " ", *token;
-			unsigned int i;
-			char *argv[] = {NULL};
-
-			printf("child\n");
 			buffer = malloc(sizeof(char) * buff_size);
 			if (buffer == NULL)
 			{
 				perror("failed to allocate memory");
 				exit(1);
 			}
-			printf("$ ");
+			printf("#cisfun $ ");
 			read = _getline(&buffer, &buff_size, stdin);
 			if (read == -1)
 			{
@@ -42,25 +42,31 @@ int main(void)
 				exit(3);
 			}
 
+			bufflen = strlen(buffer);
+			buffer[bufflen - 1] = '\0';
+
 			token = strtok(buffer, delimiter);
-			for (i = 0; token != NULL; i++)
+			for (i = 0; token != NULL && i < MAX_ARGS; i++)
 			{
 				argv[i] = token;
+				printf("%s\n", token);
 				token = strtok(NULL, delimiter);
 			}
+			argv[i] = NULL;
 			if (execve(argv[0], argv, NULL) == -1)
 			{
 				perror("Unable to execute command\n");
 				exit(2);
 			}
-			free(buffer);
 			sleep(6);
+			free(buffer);
 			exit(4);
 		}
 		else
 		{
 			waitpid(child, &status, 0);
 		}
+		free(buffer);
 	}
 	return (0);
 }
