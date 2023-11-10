@@ -1,61 +1,67 @@
 #include "main.h"
 
-size_t read_command(char **buffer, size_t *nbyte, FILE *fd)
-{
-	ssize_t getCommand;
-
-	getCommand = getline(buffer, nbyte, fd);
-	if (getCommand == -1)
-	{
-		perror("Error reading line\n");
-		exit(98);
-	}
-
-	(*buffer)[strlen(*buffer) - 1] = '\0';
-
-	return (getCommand);
-}
 /**
-  * run - runs the shell by reading and executing
+  * main - a super simple shell
   *
-  * Return: non yet
-  */
-void run()
-{
-	char *buffer;
-	size_t nbyte = BUFF_SIZE;
-	pid_t execute;
-	size_t cl;
-
-	buffer = malloc(sizeof(char) * BUFF_SIZE);
-	if (buffer == NULL)
-	{
-		perror("failed to allocate memory\n");
-		exit(1);
-	}
-	printf("#cisfun $ ");
-
-	cl = read_command(&buffer, &nbyte, stdin);
-
-	if (cl > 0)
-	{
-		char *argv[] = {buffer, NULL};
-
-		if ((execute = execve(argv[0], argv, NULL)) == -1)
-		{
-			perror("failed to Execute command\n");
-			exit(99);
-		}
-	}
-}
-/**
-  * main - Super Simple shell
-  * 
   * Return: Always 0
   */
 int main(void)
 {
-	run();
+	int i;
+
+	i = 0;
+	while (i != 1){
+		size_t read, buff_size = 1024;
+		pid_t child;
+		int status;
+
+		child = fork();
+		if (child == -1)
+		{
+			perror("Unable to create a Child Process\n");
+			exit(98);
+		}
+		if (child == 0)
+		{
+			char *buffer, *delimiter = " ", *token;
+			unsigned int i;
+			char *argv[] = {NULL};
+
+			printf("child\n");
+			buffer = malloc(sizeof(char) * buff_size);
+			if (buffer == NULL)
+			{
+				perror("failed to allocate memory");
+				exit(1);
+			}
+			printf("$ ");
+			read = _getline(&buffer, &buff_size, stdin);
+			if (read == -1)
+			{
+				perror("Unable to read from input stream\n");
+				exit(3);
+			}
+
+			token = strtok(buffer, delimiter);
+			for (i = 0; token != NULL; i++)
+			{
+				argv[i] = token;
+				token = strtok(NULL, delimiter);
+			}
+			if (execve(argv[0], argv, NULL) == -1)
+			{
+				perror("Unable to execute command\n");
+				exit(2);
+			}
+			free(buffer);
+			sleep(6);
+			exit(4);
+		}
+		else
+		{
+			waitpid(child, &status, 0);
+		}
+	}
 	return (0);
 }
 
