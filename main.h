@@ -11,6 +11,7 @@
 
 #define BUFF_SIZE 1024
 
+char *_getenv(const char *name);
 ssize_t _getline(char **buffer, size_t *nbyte, FILE *fd);
 char *_strtok(char *input, char *delimiter);
 
