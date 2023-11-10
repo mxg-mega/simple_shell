@@ -49,7 +49,6 @@ int main(void)
 			for (i = 0; token != NULL && i < MAX_ARGS; i++)
 			{
 				argv[i] = token;
-				printf("%s\n", token);
 				token = strtok(NULL, delimiter);
 			}
 			argv[i] = NULL;
@@ -58,7 +57,6 @@ int main(void)
 				perror("Unable to execute command\n");
 				exit(2);
 			}
-			sleep(6);
 			free(buffer);
 			exit(4);
 		}
