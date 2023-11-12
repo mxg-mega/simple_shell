@@ -9,22 +9,23 @@
 char *_getenv(const char *name)
 {
 	extern char **environ;
-	unsigned int i, match = 0;
+	unsigned int i;
 
 	for (i = 0; environ[i] != NULL; i++)
 	{
-		if (strncmp(name, environ[i], strlen(name)) == 0)
-		{
-			match = 1;
-			break;
+		if (strncmp(name, environ[i], strlen(name)) == 0){
+			int j;
+
+			j = 0;
+			while (environ[i][j] != '\0'){
+				if (environ[i][j] == '=')
+				{
+					return (&environ[i][++j]);
+				}
+				j++;
+			}
 		}
 	}
-	if (match != 1)
-	{
-		printf("Not found\n");
-		return (NULL);
-	}
-	printf("Working\n");
-	return (environ[i]);
+	return (NULL);
 }
 
