@@ -1,7 +1,7 @@
 #include "main.h"
 
 #define MAX_ARGS 64
-#define FAILURE -1
+#define FAIL -1
 
 /**
   * main - a super simple shell
@@ -18,11 +18,13 @@ int main(void)
 	while (1){
 
 		char *buffer, *delimiter = " ", *token;
+		char *binary_path;
 		unsigned int i, bufflen;
 		char *argv[MAX_ARGS + 1] = {NULL};
+		struct stat fileInfo;
 
 		child = fork();
-		if (child == -1)
+		if (child == FAIL)
 		{
 			perror("Unable to create a Child Process\n");
 			exit(98);
@@ -37,7 +39,7 @@ int main(void)
 			}
 			printf("#cisfun $ ");
 			read = getline(&buffer, &buff_size, stdin);
-			if (read == (size_t)FAILURE)
+			if (read == (size_t)FAIL)
 			{
 				perror("Unable to read from input stream\n");
 				exit(3);
@@ -53,7 +55,8 @@ int main(void)
 				token = strtok(NULL, delimiter);
 			}
 			argv[i] = NULL;
-			if (execve(argv[0], argv, NULL) == -1)
+			stat(argv[0], &fileInfo);
+			if (execve(argv[0], argv, NULL) == FAIL)
 			{
 				perror("Unable to execute command\n");
 				exit(2);

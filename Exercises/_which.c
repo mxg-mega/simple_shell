@@ -20,11 +20,11 @@ int main(int ac, char **av)
 	{
 		if (stat(av[i], &sta) == -1)
 		{
-			printf("File Not Found\n");
+			fprintf(stderr, "File Not Found: %s\n", av[i]);
 		}
 		else
 		{
-			printf("File Found\n");
+			fprintf(stderr, "File Found: %s\n", av[i]);
 		}
 	}
 	return (0);
