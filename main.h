@@ -19,6 +19,7 @@ typedef struct node
 	struct node *node;
 } node_t;
 
+char *searchInPath(char *command);
 char *_getenv(const char *name);
 ssize_t _getline(char **buffer, size_t *nbyte, FILE *fd);
 char *_strtok(char *input, char *delimiter);

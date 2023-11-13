@@ -19,9 +19,9 @@ int main(void)
 
 		char *buffer, *delimiter = " ", *token;
 		char *binary_path;
-		unsigned int i, bufflen;
+		int argvl;
+		unsigned int i, bufflen, slashCount = 0;
 		char *argv[MAX_ARGS + 1] = {NULL};
-		struct stat fileInfo;
 
 		child = fork();
 		if (child == FAIL)
@@ -55,30 +55,36 @@ int main(void)
 				token = strtok(NULL, delimiter);
 			}
 			argv[i] = NULL;
-			int argvl;
-			for (argvl = 0; argv[0][argvl]; argvl++)
+
+			for(argvl = 0; argv[0][argvl] != '\0'; argvl++)
 			{
-				if (argv[0][0] == '/')
-				{
-					break;
-				}
 				if (argv[0][argvl] == '/')
 				{
+					slashCount++;
 				}
 			}
-			if (slash == 1)
+			if (slashCount > 0)
 			{
+				
 				if (argv[0][0] == '/')
 				{
-					binary_path = getenv("PATH");
+					binary_path = searchInPath(&argv[0][1]);
 				}
 				else
 				{
-					binary_path = ;
+					binary_path = argv[0];
 				}
-				
 			}
-			if (execve(argv[0], argv, NULL) == FAIL)
+			else
+			{
+				binary_path = searchInPath(argv[0]);
+				if (binary_path == NULL)
+				{
+					perror("Command Not Found\n");
+					exit(100);
+				}
+			}
+			if (execve(binary_path, argv, NULL) == FAIL)
 			{
 				perror("Unable to execute command\n");
 				exit(2);

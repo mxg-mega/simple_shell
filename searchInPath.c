@@ -9,9 +9,8 @@
 char *searchInPath(char *command)
 {
 	char *path = getenv("PATH");
-	char *token;
-	char *filepath;
-	struct stat *fileInfo;
+	char *token, *filepath;
+	struct stat fileInfo;
 
 	if (command == NULL)
 	{
@@ -21,11 +20,17 @@ char *searchInPath(char *command)
 	token = strtok(path, ":");
 	while (token != NULL)
 	{
-		filepath = strcat(token, command);
-		if (stat(filepath, &fileInfo) == 0)
+		int pathlen;
+
+		pathlen = strlen(command) + strlen(token) + 2;
+		filepath = malloc(pathlen);
+		snprintf(filepath, pathlen, "%s/%s", token, command);
+
+		if (stat(filepath, &fileInfo) == 0 && fileInfo.st_mode & S_IXUSR)
 		{
 			return (filepath);
 		}
+		free(filepath);
 		token = strtok(NULL, ":");
 	}
 	perror("Executable not Found\n");
