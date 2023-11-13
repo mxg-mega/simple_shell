@@ -69,10 +69,6 @@ int main(void)
 				
 				if (argv[0][0] == '/')
 				{
-					binary_path = searchInPath(&argv[0][1]);
-				}
-				else
-				{
 					binary_path = argv[0];
 				}
 			}
@@ -88,6 +84,7 @@ int main(void)
 			if (execve(binary_path, argv, NULL) == FAIL)
 			{
 				perror("Unable to execute command\n");
+				free(buffer);
 				exit(EXIT_FAILURE);
 			}
 			free(buffer);
