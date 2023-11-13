@@ -1,6 +1,7 @@
 #include "main.h"
 
 #define MAX_ARGS 64
+#define FAILURE -1
 
 /**
   * main - a super simple shell
@@ -35,8 +36,8 @@ int main(void)
 				exit(1);
 			}
 			printf("#cisfun $ ");
-			read = _getline(&buffer, &buff_size, stdin);
-			if (read == -1)
+			read = getline(&buffer, &buff_size, stdin);
+			if (read == (size_t)FAILURE)
 			{
 				perror("Unable to read from input stream\n");
 				exit(3);

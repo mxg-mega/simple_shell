@@ -6,10 +6,8 @@
   *
   * Return: Always 0
   */
-int main(int ac, char **av, char **env)
+int main(int __attribute__ ((unused)) ac, char __attribute__ ((unused)) **av, char **env)
 {
-	extern char **environ;
-
 	printf("main - env: %p\nGlobal var - environ: %p\n", *env, *environ);
 	return (0);
 }
