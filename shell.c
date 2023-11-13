@@ -71,6 +71,10 @@ int main(void)
 				{
 					binary_path = argv[0];
 				}
+				else
+				{
+					binary_path = argv[0];
+				}
 			}
 			else
 			{
