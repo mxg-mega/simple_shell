@@ -55,7 +55,29 @@ int main(void)
 				token = strtok(NULL, delimiter);
 			}
 			argv[i] = NULL;
-			stat(argv[0], &fileInfo);
+			int argvl;
+			for (argvl = 0; argv[0][argvl]; argvl++)
+			{
+				if (argv[0][0] == '/')
+				{
+					break;
+				}
+				if (argv[0][argvl] == '/')
+				{
+				}
+			}
+			if (slash == 1)
+			{
+				if (argv[0][0] == '/')
+				{
+					binary_path = getenv("PATH");
+				}
+				else
+				{
+					binary_path = ;
+				}
+				
+			}
 			if (execve(argv[0], argv, NULL) == FAIL)
 			{
 				perror("Unable to execute command\n");
