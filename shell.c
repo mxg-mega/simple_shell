@@ -1,5 +1,13 @@
 #include "main.h"
 
+volatile sig_atomic_t exit_requested = 0;
+void handle_sigterm(int signum)
+{
+	if (signum == SIGTERM)
+	{
+		exit_requested = 1;
+	}
+}
 /**
   * main - a super simple shell
   *
@@ -9,8 +17,9 @@ int main(void)
 {
 	pid_t child;
 	int status;
+	signal(SIGTERM, handle_sigterm);
 
-	while (1)
+	while (!exit_requested)
 	{
 		char *buffer, *delimiter = " ";
 		char *binary_path;
@@ -28,6 +37,7 @@ int main(void)
 			if (strcmp(buffer, "exit") == 0)
 			{
 				free(buffer);
+				kill(0, SIGTERM);
 				exit(EXIT_SUCCESS);
 			}
 			tokenizeInput(buffer, delimiter, argv);

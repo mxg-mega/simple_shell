@@ -3,8 +3,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stddef.h>
 #include <string.h>
 #include <unistd.h>
+#include <signal.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -14,6 +16,7 @@
 #define FAIL -1
 
 extern char **environ;
+volatile sig_atomic_t exit_requested;
 
 typedef struct node
 {
