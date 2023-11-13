@@ -24,16 +24,21 @@ char *searchInPath(char *command)
 
 		pathlen = strlen(command) + strlen(token) + 2;
 		filepath = malloc(pathlen);
+		if (filepath == NULL)
+		{
+			perror("Error allocating memory");
+			return (NULL);
+		}
+
 		snprintf(filepath, pathlen, "%s/%s", token, command);
 
-		if (stat(filepath, &fileInfo) == 0 && fileInfo.st_mode & S_IXUSR)
+		if (stat(filepath, &fileInfo) == 0)
 		{
 			return (filepath);
 		}
 		free(filepath);
 		token = strtok(NULL, ":");
 	}
-	perror("Executable not Found\n");
 	return (NULL);
 }
 

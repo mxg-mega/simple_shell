@@ -15,7 +15,8 @@ int main(void)
 	pid_t child;
 	int status;
 
-	while (1){
+	while (1)
+	{
 
 		char *buffer, *delimiter = " ", *token;
 		char *binary_path;
@@ -27,7 +28,7 @@ int main(void)
 		if (child == FAIL)
 		{
 			perror("Unable to create a Child Process\n");
-			exit(98);
+			exit(EXIT_FAILURE);
 		}
 		if (child == 0)
 		{
@@ -35,14 +36,14 @@ int main(void)
 			if (buffer == NULL)
 			{
 				perror("failed to allocate memory");
-				exit(1);
+				exit(EXIT_FAILURE);
 			}
 			printf("#cisfun $ ");
 			read = getline(&buffer, &buff_size, stdin);
 			if (read == (size_t)FAIL)
 			{
 				perror("Unable to read from input stream\n");
-				exit(3);
+				exit(EXIT_FAILURE);
 			}
 
 			bufflen = strlen(buffer);
@@ -81,22 +82,21 @@ int main(void)
 				if (binary_path == NULL)
 				{
 					perror("Command Not Found\n");
-					exit(100);
+					exit(EXIT_FAILURE);
 				}
 			}
 			if (execve(binary_path, argv, NULL) == FAIL)
 			{
 				perror("Unable to execute command\n");
-				exit(2);
+				exit(EXIT_FAILURE);
 			}
 			free(buffer);
-			exit(4);
+			return (0);
 		}
 		else
 		{
 			waitpid(child, &status, 0);
 		}
-		free(buffer);
 	}
 	return (0);
 }
