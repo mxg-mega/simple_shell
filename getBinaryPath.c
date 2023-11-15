@@ -6,7 +6,7 @@
   *
   * Return: pointer to a string of the binary path
   */
-char* getBinaryPath(char* command)
+char *getBinaryPath(char *command)
 {
 	char *binary_path;
 	int slashCount = 0;
@@ -30,7 +30,8 @@ char* getBinaryPath(char* command)
 		if (binary_path == NULL)
 		{
 			perror("Command Not Found\n");
-			exit(EXIT_FAILURE);
+			free(binary_path);
+			_exit(EXIT_FAILURE);
 		}
 	}
 

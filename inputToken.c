@@ -1,14 +1,14 @@
 #include "main.h"
 
 /**
-  * tokenizeInpute - Tokenize the input string
+  * tokenizeInput - Tokenize the input string
   * @buffer: the string to tokenize
   * @delimiter: the delimiter
   * @argv: array to hold the tokens
   *
   * Return: no Return
   */
-void tokenizeInput(char* buffer, char* delimiter, char** argv)
+void tokenizeInput(char *buffer, char *delimiter, char **argv)
 {
 	char *token;
 	unsigned int i;

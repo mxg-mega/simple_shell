@@ -1,6 +1,5 @@
 #include "main.h"
 
-volatile sig_atomic_t exit_requested = 0;
 void handle_sigterm(int signum)
 {
 	if (signum == SIGTERM)
@@ -8,6 +7,7 @@ void handle_sigterm(int signum)
 		exit_requested = 1;
 	}
 }
+
 /**
   * main - a super simple shell
   *
@@ -29,7 +29,7 @@ int main(void)
 		if (child == FAIL)
 		{
 			perror("Unable to create a Child Process\n");
-			exit(EXIT_FAILURE);
+			_exit(EXIT_FAILURE);
 		}
 		if (child == 0)
 		{
@@ -38,9 +38,13 @@ int main(void)
 			{
 				free(buffer);
 				kill(0, SIGTERM);
-				exit(EXIT_SUCCESS);
+				_exit(EXIT_SUCCESS);
 			}
 			tokenizeInput(buffer, delimiter, argv);
+			if (argv[0] == NULL)
+			{
+				_exit(EXIT_FAILURE);
+			}
 
 			binary_path = getBinaryPath(argv[0]);
 
@@ -48,7 +52,7 @@ int main(void)
 			{
 				perror("Unable to execute command\n");
 				free(buffer);
-				exit(EXIT_FAILURE);
+				_exit(EXIT_FAILURE);
 			}
 			free(buffer);
 			exit(EXIT_SUCCESS);
