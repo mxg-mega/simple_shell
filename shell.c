@@ -30,8 +30,7 @@ int main(int __attribute__ ((unused)) ac, char **av)
 	size_t buffsize = 1024;
 	int status;
 
-	signal(SIGTERM, handle_sigterm);
-	while (!exit_request)
+	while (1)
 	{
 		char *buffer, *argv[] = {NULL};
 
