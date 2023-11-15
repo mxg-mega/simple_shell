@@ -19,6 +19,7 @@ char *readInput(char *buffer, size_t buffsize)
 	if (read == (size_t)FAIL)
 	{
 		free(buffer);
+		kill(0, SIGTERM);
 		_exit(EXIT_FAILURE);
 	}
 	bufflen = strlen(buffer);
