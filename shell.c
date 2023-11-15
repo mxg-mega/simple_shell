@@ -43,8 +43,7 @@ int main(int __attribute__ ((unused)) ac, char **av)
 			{
 				char *argv[] = {NULL};
 
-				argv[0] = buffer;
-				argv[1] = NULL;
+				tokenizeInput(buffer, argv);
 				if (execve(argv[0], argv, NULL) == -1)
 				{
 					fprintf(stderr, "%s: No such file or directory\n", av[0]);
