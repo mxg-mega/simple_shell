@@ -2,8 +2,8 @@
 
 /**
   * tokenizeInput - tokenizes the buffer
-  *
-  *
+  * @buffer: the string
+  * @argv: yhe exection array
   *
   * Return:
   */

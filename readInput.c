@@ -24,5 +24,5 @@ char *readInput(char *buffer, size_t buffsize)
 	bufflen = strlen(buffer);
 	buffer[bufflen - 1] = '\0';
 
-	return(buffer);
+	return (buffer);
 }
