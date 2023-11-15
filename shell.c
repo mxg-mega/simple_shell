@@ -27,35 +27,33 @@ void handle_child_fork(pid_t child)
 int main(int __attribute__ ((unused)) ac, char **av)
 {
 	pid_t child;
-	size_t buffsize = 1024;
 	int status;
 
 	while (1)
 	{
-		char *buffer, *argv[] = {NULL};
+		char *buffer;
 
 		child = fork();
 		handle_child_fork(child);
 		if (child == 0)
 		{
-			buffer = malloc(sizeof(char) * buffsize);
-			if (buffer == NULL)
+			buffer = readInput();
+
+			if (buffer != NULL)
 			{
-				perror("Failed to allocate memory\n");
-				_exit(EXIT_FAILURE);
-			}
-			printf("#cisfun$ ");
-			buffer = readInput(buffer, buffsize);
-			argv[0] = buffer;
-			argv[1] = NULL;
-			if (execve(argv[0], argv, NULL) == -1)
-			{
-				fprintf(stderr, "%s: No such file or directory\n", av[0]);
-				free(buffer);
-				_exit(EXIT_FAILURE);
+				char *argv[] = {NULL};
+
+				argv[0] = buffer;
+				argv[1] = NULL;
+				if (execve(argv[0], argv, NULL) == -1)
+				{
+					fprintf(stderr, "%s: No such file or directory\n", av[0]);
+					free(buffer);
+					_exit(99);
+				}
 			}
 			free(buffer);
-			exit(EXIT_SUCCESS);
+			return (0);
 		}
 		else
 		{

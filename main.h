@@ -16,7 +16,7 @@
 extern char **environ;
 
 void handle_sigterm(int signum);
-char *readInput(char *buffer, size_t bufferlen);
+char *readInput(void);
 void tokenizeInput(char *buffer, char **argv);
 
 #endif/*MAIN_H*/
