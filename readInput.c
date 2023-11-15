@@ -9,7 +9,7 @@ char *readInput(void)
 {
 	char *buffer;
 	size_t buff_size = 1024;
-	size_t read, bufflen;
+	size_t read;
 
 	buffer = malloc(sizeof(char) * buff_size);
 	if (buffer == NULL)
@@ -28,9 +28,6 @@ char *readInput(void)
 		kill(0, SIGTERM);
 		_exit(EXIT_FAILURE);
 	}
-
-	bufflen = strlen(buffer);
-	buffer[bufflen - 1] = '\0';
 
 	return (buffer);
 }

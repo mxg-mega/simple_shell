@@ -10,7 +10,7 @@
 void tokenizeInput(char *buffer, char **argv)
 {
 	unsigned int i = 0;
-	char *token, *delimiter = " ";
+	char *token, *delimiter = " \t\n";
 
 	token = strtok(buffer, delimiter);
 	while (token != NULL)
