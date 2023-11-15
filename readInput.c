@@ -25,7 +25,6 @@ char *readInput(void)
 	{
 		/*perror("Unable to read from input stream\n");*/
 		free(buffer);
-		kill(0, SIGTERM);
 		_exit(EXIT_FAILURE);
 	}
 
