@@ -15,6 +15,7 @@ int main(int __attribute__ ((unused)) ac, char **av)
 	size_t buffsize = 1024;
 	int status;
 
+	signal(SIGTERM, handle_sigterm);
 	while (1)
 	{
 		char *buffer, *argv[] = {NULL};
@@ -33,7 +34,7 @@ int main(int __attribute__ ((unused)) ac, char **av)
 				perror("Failed to allocate memory\n");
 				_exit(EXIT_FAILURE);
 			}
-			printf("#cisfun $ ");
+			printf("#cisfun$ ");
 			buffer = readInput(buffer, buffsize);
 			argv[0] = buffer;
 			argv[1] = NULL;
