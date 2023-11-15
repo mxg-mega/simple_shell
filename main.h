@@ -16,21 +16,8 @@
 #define FAIL -1
 
 extern char **environ;
-sig_atomic_t exit_requested;
 
-typedef struct node
-{
-	char *dir;
-	struct node *node;
-} node_t;
-
-char *readInput(void);
-void tokenizeInput(char *buffer, char *delimiter, char **argv);
-char *getBinaryPath(char *command);
-char *searchInPath(char *command);
-char *_getenv(const char *name);
-ssize_t _getline(char **buffer, size_t *nbyte, FILE *fd);
-char *_strtok(char *input, char *delimiter);
-node_t *path_dir(char *varname);
+char *readInput(char *buffer, size_t bufferlen);
+void tokenizeInput(char *buffer, char **argv);
 
 #endif/*MAIN_H*/

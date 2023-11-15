@@ -1,57 +1,45 @@
 #include "main.h"
 
-void handle_sigterm(int signum)
-{
-	if (signum == SIGTERM)
-	{
-		exit_requested = 1;
-	}
-}
+#define FAIL -1
 
 /**
-  * main - a super simple shell
+  * main - a simple shell
+  * @ac: number of arguments
+  * @av: argument variable array
   *
   * Return: Always 0
   */
-int main(void)
+int main(int __attribute__ ((unused)) ac, char **av)
 {
 	pid_t child;
+	size_t buffsize = 1024;
 	int status;
-	signal(SIGTERM, handle_sigterm);
 
-	while (!exit_requested)
+	while (1)
 	{
-		char *buffer, *delimiter = " ";
-		char *binary_path;
-		char *argv[MAX_ARGS + 1] = {NULL};
+		char *buffer, *argv[] = {NULL};
 
 		child = fork();
-		if (child == FAIL)
+		if (child == -1)
 		{
-			perror("Unable to create a Child Process\n");
-			_exit(EXIT_FAILURE);
+			perror("child process creation failed\n");
+			exit(EXIT_FAILURE);
 		}
 		if (child == 0)
 		{
-			buffer = readInput();
-			if (strcmp(buffer, "exit") == 0)
+			buffer = malloc(sizeof(char) * buffsize);
+			if (buffer == NULL)
 			{
-				free(buffer);
-				kill(0, SIGTERM);
-				_exit(EXIT_SUCCESS);
-			}
-			tokenizeInput(buffer, delimiter, argv);
-			if (argv[0] == NULL)
-			{
+				perror("Failed to allocate memory\n");
 				_exit(EXIT_FAILURE);
 			}
-
-			binary_path = getBinaryPath(argv[0]);
-
-			if (execve(binary_path, argv, NULL) == FAIL)
+			printf("#cisfun $ ");
+			buffer = readInput(buffer, buffsize);
+			argv[0] = buffer;
+			argv[1] = NULL;
+			if (execve(argv[0], argv, NULL) == -1)
 			{
-				perror("Unable to execute command\n");
-				free(buffer);
+				fprintf(stderr, "%s: No such file or directory\n", av[0]);
 				_exit(EXIT_FAILURE);
 			}
 			free(buffer);

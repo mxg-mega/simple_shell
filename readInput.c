@@ -1,38 +1,28 @@
 #include "main.h"
 
 /**
-  * readInput - Read input from the user
+  * readInput - function reads the command
+  * @buffer: the buffer
+  * @buffsize: size of buffer
   *
-  * Return: a string
+  * Return: a string of the command
   */
-char *readInput(void)
+char *readInput(char *buffer, size_t buffsize)
 {
-	char *buffer;
-	size_t buff_size = 1024;
 	size_t read, bufflen;
 
-	buffer = malloc(sizeof(char) * buff_size);
-	if (buffer == NULL)
+	if (buffer == NULL || buffsize == 0)
 	{
-		perror("failed to allocate memory");
-		_exit(EXIT_FAILURE);
+		return (NULL);
 	}
-
-	printf("#cisfun $ ");
-
-	read = getline(&buffer, &buff_size, stdin);
+	read = getline(&buffer, &buffsize, stdin);
 	if (read == (size_t)FAIL)
 	{
-		/*perror("Unable to read from input stream\n");*/
 		free(buffer);
-		printf("\n");
-		kill(0, SIGTERM);
 		_exit(EXIT_FAILURE);
 	}
-
 	bufflen = strlen(buffer);
 	buffer[bufflen - 1] = '\0';
 
-	return (buffer);
+	return(buffer);
 }
-
