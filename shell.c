@@ -2,19 +2,18 @@
 
 #define FAIL -1
 
-sig_atomic_t exit_request = 0;
-
 /**
-  * handle_sigterm - handles the termination signal
-  * @signum: the signal number
+  * handle_child_fork - function handles child process
+  * @child: the return of child process
   *
-  * Return; void
+  * Return: no Return
   */
-void handle_sigterm(int signum)
+void handle_child_fork(pid_t child)
 {
-	if (signum == SIGTERM)
+	if (child == -1)
 	{
-		exit_request = 1;
+		perror("child process creation failed\n");
+		_exit(EXIT_FAILURE);
 	}
 }
 
@@ -37,11 +36,7 @@ int main(int __attribute__ ((unused)) ac, char **av)
 		char *buffer, *argv[] = {NULL};
 
 		child = fork();
-		if (child == -1)
-		{
-			perror("child process creation failed\n");
-			_exit(EXIT_FAILURE);
-		}
+		handle_child_fork(child);
 		if (child == 0)
 		{
 			buffer = malloc(sizeof(char) * buffsize);
@@ -57,6 +52,7 @@ int main(int __attribute__ ((unused)) ac, char **av)
 			if (execve(argv[0], argv, NULL) == -1)
 			{
 				fprintf(stderr, "%s: No such file or directory\n", av[0]);
+				free(buffer);
 				_exit(EXIT_FAILURE);
 			}
 			free(buffer);
