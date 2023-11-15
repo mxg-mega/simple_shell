@@ -11,12 +11,11 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define BUFF_SIZE 1024
-#define MAX_ARGS 64
 #define FAIL -1
 
 extern char **environ;
 
+void handle_sigterm(int signum);
 char *readInput(char *buffer, size_t bufferlen);
 void tokenizeInput(char *buffer, char **argv);
 

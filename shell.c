@@ -2,6 +2,22 @@
 
 #define FAIL -1
 
+sig_atomic_t exit_request = 0;
+
+/**
+  * handle_sigterm - handles the termination signal
+  * @signum: the signal number
+  *
+  * Return; void
+  */
+void handle_sigterm(int signum)
+{
+	if (signum == SIGTERM)
+	{
+		exit_request = 1;
+	}
+}
+
 /**
   * main - a simple shell
   * @ac: number of arguments
@@ -16,7 +32,7 @@ int main(int __attribute__ ((unused)) ac, char **av)
 	int status;
 
 	signal(SIGTERM, handle_sigterm);
-	while (1)
+	while (!exit_request)
 	{
 		char *buffer, *argv[] = {NULL};
 
@@ -24,7 +40,7 @@ int main(int __attribute__ ((unused)) ac, char **av)
 		if (child == -1)
 		{
 			perror("child process creation failed\n");
-			exit(EXIT_FAILURE);
+			_exit(EXIT_FAILURE);
 		}
 		if (child == 0)
 		{
