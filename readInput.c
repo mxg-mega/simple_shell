@@ -13,13 +13,12 @@ char *readInput(void)
 
 	printf("#cisfun $ ");
 
-	fflush(stdin);
 	read = getline(&buffer, &buff_size, stdin);
 	if (read == (size_t)FAIL)
 	{
 		/*perror("Unable to read from input stream\n");*/
 		free(buffer);
-		kill(0, SIGTERM);
+		return (NULL);
 	}
 
 	return (buffer);

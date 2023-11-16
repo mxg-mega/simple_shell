@@ -7,7 +7,7 @@
   * @signum: signal for termination
   *
   * Return: no return
-  */
+  *
 void handle_sigterm(int signum)
 {
 	if (signum == SIGTERM)
@@ -15,18 +15,19 @@ void handle_sigterm(int signum)
 		exit(EXIT_SUCCESS);
 	}
 }
-
+*/
 /**
   * handle_child_fork - function handles child process
   * @child: the return of child process
   *
   * Return: no Return
   */
-void handle_child_fork(pid_t child)
+void handle_child_fork(pid_t child, char *buffer)
 {
 	if (child == -1)
 	{
 		perror("child process creation failed\n");
+		free(buffer);
 		_exit(EXIT_FAILURE);
 	}
 }
@@ -41,24 +42,32 @@ void handle_child_fork(pid_t child)
 int main(int __attribute__ ((unused)) ac, char **av)
 {
 	pid_t child;
-	int status;
+	int terminate = 0;
 
-	signal(SIGTERM, handle_sigterm);
-	while (1)
+	while (terminate == 0)
 	{
 		char *buffer;
+		char *argv[] = {NULL};
+
+		buffer = readInput();
+		if (buffer == NULL)
+		{
+			free(buffer);
+			exit(EXIT_FAILURE);
+		}
 
 		child = fork();
-		handle_child_fork(child);
+		handle_child_fork(child, buffer);
 		if (child == 0)
 		{
-			buffer = readInput();
-
 			if (buffer != NULL)
 			{
-				char *argv[] = {NULL};
-
 				tokenizeInput(buffer, argv);
+				if (argv[0] == NULL)
+				{
+					free(buffer);
+					_exit(EXIT_FAILURE);
+				}
 				if (execve(argv[0], argv, NULL) == -1)
 				{
 					fprintf(stderr, "%s: No such file or directory\n", av[0]);
@@ -71,7 +80,8 @@ int main(int __attribute__ ((unused)) ac, char **av)
 		}
 		else
 		{
-			waitpid(child, &status, 0);
+			wait(NULL);
+			free(buffer);
 		}
 	}
 	return (0);
