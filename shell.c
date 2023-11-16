@@ -3,6 +3,20 @@
 #define FAIL -1
 
 /**
+  * handle_sigterm - function handles the termination signal
+  * @signum: signal for termination
+  *
+  * Return: no return
+  */
+void handle_sigterm(int signum)
+{
+	if (signum == SIGTERM)
+	{
+		exit(EXIT_SUCCESS);
+	}
+}
+
+/**
   * handle_child_fork - function handles child process
   * @child: the return of child process
   *
@@ -29,6 +43,7 @@ int main(int __attribute__ ((unused)) ac, char **av)
 	pid_t child;
 	int status;
 
+	signal(SIGTERM, handle_sigterm);
 	while (1)
 	{
 		char *buffer;

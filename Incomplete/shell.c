@@ -44,7 +44,7 @@ int main(void)
 	while (!exit_requested)
 	{
 		char *buffer, *delimiter = " ", *binary_path;
-		char *argv[MAX_ARGS + 1] = {NULL};
+		char *argv[] = {NULL};
 
 		child = fork();
 		if (child == FAIL)

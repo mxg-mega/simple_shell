@@ -19,7 +19,7 @@ char *readInput(void)
 	{
 		/*perror("Unable to read from input stream\n");*/
 		free(buffer);
-		exit(EXIT_FAILURE);
+		kill(0, SIGTERM);
 	}
 
 	return (buffer);
