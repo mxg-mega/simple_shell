@@ -52,7 +52,7 @@ int main(int __attribute__ ((unused)) ac, char **av)
 				}
 			}
 			free(buffer);
-			return (0);
+			exit(EXIT_SUCCESS);
 		}
 		else
 		{

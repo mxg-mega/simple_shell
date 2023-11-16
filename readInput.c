@@ -7,16 +7,9 @@
   */
 char *readInput(void)
 {
-	char *buffer;
-	size_t buff_size = 1024;
+	char *buffer = NULL;
+	size_t buff_size = 0;
 	size_t read;
-
-	buffer = malloc(sizeof(char) * buff_size);
-	if (buffer == NULL)
-	{
-		perror("failed to allocate memory");
-		_exit(EXIT_FAILURE);
-	}
 
 	printf("#cisfun $ ");
 
@@ -25,7 +18,7 @@ char *readInput(void)
 	{
 		/*perror("Unable to read from input stream\n");*/
 		free(buffer);
-		_exit(EXIT_FAILURE);
+		kill(0, SIGTERM);
 	}
 
 	return (buffer);
