@@ -50,11 +50,6 @@ int main(int __attribute__ ((unused)) ac, char **av)
 		char *argv[] = {NULL};
 
 		buffer = readInput();
-		if (buffer == NULL)
-		{
-			free(buffer);
-			exit(EXIT_FAILURE);
-		}
 
 		child = fork();
 		handle_child_fork(child, buffer);
