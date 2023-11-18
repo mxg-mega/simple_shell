@@ -46,19 +46,14 @@ int main(int __attribute__ ((unused)) ac, char **av)
 
 	while (terminate == 0)
 	{
-		char *buffer;
+		char *buffer = NULL;
 		char *argv[] = {NULL};
-
-		buffer = readInput();
-		if (buffer == NULL)
-		{
-			break;
-		}
 
 		child = fork();
 		handle_child_fork(child, buffer);
 		if (child == 0)
 		{
+			buffer = readInput();
 			if (buffer != NULL)
 			{
 				argv[0] = buffer;
