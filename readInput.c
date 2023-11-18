@@ -11,8 +11,6 @@ char *readInput(void)
 	size_t buff_size = 0;
 	size_t read;
 
-	printf("#cisfun$ ");
-
 	read = getline(&buffer, &buff_size, stdin);
 	if (read == (size_t)FAIL)
 	{

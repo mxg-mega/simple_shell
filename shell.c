@@ -22,12 +22,11 @@ void handle_sigterm(int signum)
   *
   * Return: no Return
   */
-void handle_child_fork(pid_t child, char *buffer)
+void handle_child_fork(pid_t child)
 {
 	if (child == -1)
 	{
 		perror("child process creation failed\n");
-		free(buffer);
 		_exit(EXIT_FAILURE);
 	}
 }
@@ -42,20 +41,28 @@ void handle_child_fork(pid_t child, char *buffer)
 int main(int __attribute__ ((unused)) ac, char **av)
 {
 	pid_t child;
+	int status;
 	int terminate = 0;
 
 	while (terminate == 0)
 	{
-		char *buffer = NULL;
+		char *buffer;
 		char *argv[] = {NULL};
 
+		prompt("#cisfun$");
+		buffer = readInput();
+		if (buffer == NULL)
+		{
+			free(buffer);
+			exit(101);
+		}
 		child = fork();
-		handle_child_fork(child, buffer);
+		handle_child_fork(child);
 		if (child == 0)
 		{
-			buffer = readInput();
 			if (buffer != NULL)
 			{
+				buffer[strlen(buffer) - 1] = '\0';
 				argv[0] = buffer;
 				argv[1] = NULL;
 				if (argv[0] == NULL)
@@ -75,7 +82,7 @@ int main(int __attribute__ ((unused)) ac, char **av)
 		}
 		else
 		{
-			wait(NULL);
+			wait(&status);
 			free(buffer);
 		}
 	}

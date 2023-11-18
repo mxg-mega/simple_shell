@@ -15,6 +15,7 @@
 
 extern char **environ;
 
+void prompt(char *text);
 void handle_sigterm(int signum);
 char *readInput(void);
 void tokenizeInput(char *buffer, char **argv);
