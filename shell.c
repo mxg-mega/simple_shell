@@ -61,7 +61,8 @@ int main(int __attribute__ ((unused)) ac, char **av)
 		{
 			if (buffer != NULL)
 			{
-				tokenizeInput(buffer, argv);
+				argv[0] = buffer;
+				argv[1] = NULL;
 				if (argv[0] == NULL)
 				{
 					free(buffer);
