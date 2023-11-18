@@ -7,16 +7,19 @@
   */
 char *readInput(void)
 {
-	char *buffer = NULL;
-	size_t buff_size = 0;
-	size_t read;
+	char *buffer;
+	size_t buff_size = 1024;
 
-	read = getline(&buffer, &buff_size, stdin);
-	if (read == (size_t)FAIL)
+	buffer = malloc(sizeof(char) * buff_size);
+	if (buffer == NULL)
 	{
-		/*perror("Unable to read from input stream\n");*/
-		free(buffer);
+		perror("unable to allocate memory\n");
 		return (NULL);
+	}
+	if (fgets(buffer, buff_size, stdin) == NULL)
+	{
+		free(buffer);
+		exit(EXIT_FAILURE);
 	}
 
 	return (buffer);

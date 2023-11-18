@@ -43,26 +43,20 @@ int main(int __attribute__ ((unused)) ac, char **av)
 	pid_t child;
 	int status;
 	int terminate = 0;
+	char *buffer;
+	char *argv[] = {NULL};
 
 	while (terminate == 0)
 	{
-		char *buffer;
-		char *argv[] = {NULL};
-
 		prompt("#cisfun$");
 		buffer = readInput();
-		if (buffer == NULL)
-		{
-			free(buffer);
-			exit(101);
-		}
+		buffer[strcspn(buffer, "\n")] = '\0';
 		child = fork();
 		handle_child_fork(child);
 		if (child == 0)
 		{
 			if (buffer != NULL)
 			{
-				buffer[strlen(buffer) - 1] = '\0';
 				argv[0] = buffer;
 				argv[1] = NULL;
 				if (argv[0] == NULL)
@@ -77,8 +71,6 @@ int main(int __attribute__ ((unused)) ac, char **av)
 					_exit(99);
 				}
 			}
-			free(buffer);
-			exit(EXIT_SUCCESS);
 		}
 		else
 		{
