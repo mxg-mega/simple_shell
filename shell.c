@@ -1,6 +1,7 @@
 #include "main.h"
 
 #define FAIL -1
+#define MAX_COMMAND_LENGTH 100
 
 /**
   * handle_sigterm - function handles the termination signal
@@ -41,26 +42,29 @@ void handle_child_fork(pid_t child)
 int main(int __attribute__ ((unused)) ac, char **av)
 {
 	int status;
-	char *buffer = NULL;
+	char input[MAX_COMMAND_LENGTH];
+	pid_t child;
 
 	do
 	{
-		pid_t child;
-
 		prompt("#cisfun$");
-		buffer = readInput();
+		if (fgets(input, MAX_COMMAND_LENGTH, stdin) == NULL)
+		{
+			printf("\n");
+			break;
+		}
+		input[strcspn(input, "\n")] = '\0';
 		child = fork();
 		handle_child_fork(child);
 		if (child == 0)
 		{
 			char *args[2];
 
-			args[0] = buffer;
+			args[0] = input;
 			args[1] = NULL;
-			if (execve(buffer, args, NULL) == -1)
+			if (execve(input, args, NULL) == -1)
 			{
 			fprintf(stderr, "%s: No such file or directory\n", av[0]);
-			free(buffer);
 			_exit(EXIT_FAILURE);
 			}
 		}
@@ -68,7 +72,6 @@ int main(int __attribute__ ((unused)) ac, char **av)
 		{
 			if (waitpid(child, &status, 0) == -1)
 			{
-				free(buffer);
 				exit(EXIT_FAILURE);
 			}
 		}
