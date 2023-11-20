@@ -40,41 +40,39 @@ void handle_child_fork(pid_t child)
   */
 int main(int __attribute__ ((unused)) ac, char **av)
 {
-	pid_t child;
-	char **env = environ;
 	int status;
-	int terminate = -1;
-	char *buffer;
-	char *argv[] = {NULL};
+	char *buffer = NULL;
 
 	do
 	{
+		pid_t child;
+
+		prompt("#cisfun$");
+		buffer = readInput();
 		child = fork();
 		handle_child_fork(child);
 		if (child == 0)
 		{
-			prompt("#cisfun$");
-			buffer = readInput();
-			argv[0] = buffer;
-			argv[1] = NULL;
-			if (argv[0] == NULL)
+			char *args[2];
+
+			args[0] = buffer;
+			args[1] = NULL;
+			if (execve(buffer, args, NULL) == -1)
 			{
-				free(buffer);
-				_exit(EXIT_FAILURE);
-			}
-			if (execve(argv[0], argv, env) == -1)
-			{
-				fprintf(stderr, "%s: No such file or directory\n", av[0]);
-				free(buffer);
-				_exit(99);
+			fprintf(stderr, "%s: No such file or directory\n", av[0]);
+			free(buffer);
+			_exit(EXIT_FAILURE);
 			}
 		}
 		else
 		{
-			wait(&status);
-			free(buffer);
+			if (waitpid(child, &status, 0) == -1)
+			{
+				free(buffer);
+				exit(EXIT_FAILURE);
+			}
 		}
-	} while (terminate == -1);
+	} while (1);
 
 	return (0);
 }
