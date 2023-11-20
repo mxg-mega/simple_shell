@@ -49,13 +49,13 @@ void non_interactive_shell(char *program)
 		}
 		token = strtok(NULL, "\n");
 	}
-		if (child > 0)
+	if (child > 0)
+	{
+		if (waitpid(child, &status, 0) == -1)
 		{
-			if (waitpid(child, &status, 0) == -1)
-			{
-					exit(EXIT_FAILURE);
+				exit(EXIT_FAILURE);
 				free(buffer);
-			}
-			close(STDIN_FILENO);
 		}
+		free(buffer);
+	}
 }
