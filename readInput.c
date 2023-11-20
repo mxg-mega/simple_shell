@@ -7,21 +7,26 @@
   */
 char *readInput(void)
 {
-	char *buffer;
-	size_t buff_size = 1024;
+	char *buffer = NULL;
+	size_t buff_size = 0;
+	int read;
 
-	buffer = malloc(sizeof(char) * buff_size);
-	if (buffer == NULL)
+	read = getline(&buffer, &buff_size, stdin);
+	if (read == FAIL)
 	{
-		perror("unable to allocate memory\n");
-		return (NULL);
-	}
-	if (fgets(buffer, buff_size, stdin) == NULL)
-	{
-		free(buffer);
-		exit(EXIT_FAILURE);
+		if (feof(stdin))
+		{
+			free(buffer);
+			exit(EXIT_SUCCESS);
+		}
+		else
+		{
+			free(buffer);
+			exit(EXIT_FAILURE);
+		}
 	}
 
+	buffer[strcspn(buffer, "\n")] = '\0';
 	return (buffer);
 }
 
