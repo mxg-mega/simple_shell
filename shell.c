@@ -43,33 +43,30 @@ int main(int __attribute__ ((unused)) ac, char **av)
 	pid_t child;
 	char **env = environ;
 	int status;
-	int terminate = 0;
+	int terminate = -1;
 	char *buffer;
 	char *argv[] = {NULL};
 
-	while (terminate == 0)
+	do
 	{
-		prompt("#cisfun$");
-		buffer = readInput();
 		child = fork();
 		handle_child_fork(child);
 		if (child == 0)
 		{
-			if (buffer != NULL)
+			prompt("#cisfun$");
+			buffer = readInput();
+			argv[0] = buffer;
+			argv[1] = NULL;
+			if (argv[0] == NULL)
 			{
-				argv[0] = buffer;
-				argv[1] = NULL;
-				if (argv[0] == NULL)
-				{
-					free(buffer);
-					_exit(EXIT_FAILURE);
-				}
-				if (execve(argv[0], argv, env) == -1)
-				{
-					fprintf(stderr, "%s: No such file or directory\n", av[0]);
-					free(buffer);
-					_exit(99);
-				}
+				free(buffer);
+				_exit(EXIT_FAILURE);
+			}
+			if (execve(argv[0], argv, env) == -1)
+			{
+				fprintf(stderr, "%s: No such file or directory\n", av[0]);
+				free(buffer);
+				_exit(99);
 			}
 		}
 		else
@@ -77,7 +74,8 @@ int main(int __attribute__ ((unused)) ac, char **av)
 			wait(&status);
 			free(buffer);
 		}
-	}
+	} while (terminate == -1);
+
 	return (0);
 }
 

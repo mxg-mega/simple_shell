@@ -17,7 +17,7 @@ char *readInput(void)
 		if (feof(stdin))
 		{
 			free(buffer);
-			exit(EXIT_SUCCESS);
+			return (NULL);
 		}
 		else
 		{
