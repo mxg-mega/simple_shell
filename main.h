@@ -16,7 +16,9 @@
 extern char **environ;
 
 void prompt(char *text);
-void handle_sigterm(int signum);
+void non_interactive_shell(char *program);
+void interactive_shell(char *program);
+void handle_child_fork(pid_t child);
 char *readInput(void);
 void tokenizeInput(char *buffer, char **argv);
 
