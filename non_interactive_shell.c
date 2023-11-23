@@ -36,7 +36,7 @@ void non_interactive_shell(char *program, char *cmd)
 			free(buffer);
 			exit(EXIT_FAILURE);
 		}
-		buffer[BUFFSIZE - 1] = '\0';
+		buffer[BUFF_SIZE - 1] = '\0';
 	}
 	token = strtok(buffer, "\n");
 	while (token != NULL){
