@@ -9,7 +9,7 @@
   *
   * Return: Always 0
   */
-void non_interactive_shell(char *program)
+void non_interactive_shell(char *program, char *cmd)
 {
 	int status;
 	ssize_t r;
@@ -22,14 +22,21 @@ void non_interactive_shell(char *program)
 		perror("Memory Allocation Failed\n");
 		exit(EXIT_FAILURE);
 	}
-	r = read(STDIN_FILENO, buffer, BUFF_SIZE);
-	if (r == -1)
+	if (cmd != NULL)
 	{
-		perror("Could not read command\n");
-		free(buffer);
-		exit(EXIT_FAILURE);
+		strncpy(buffer, cmd, BUFF_SIZE - 1);
 	}
-	buffer[strlen(buffer) - 1] = '\0';
+	else
+	{
+		r = read(STDIN_FILENO, buffer, BUFF_SIZE);
+		if (r == -1)
+		{
+			perror("Could not read command\n");
+			free(buffer);
+			exit(EXIT_FAILURE);
+		}
+		buffer[strlen(buffer) - 1] = '\0';
+	}
 	token = strtok(buffer, "\n");
 	while (token != NULL){
 		child = fork();

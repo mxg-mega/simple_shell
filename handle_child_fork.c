@@ -6,7 +6,7 @@
   *
   * Return: no return
   */
-void handle_child_fork(pid_t child)
+void handle_child_fork (pid_t child)
 {
 	if (child == -1)
 	{

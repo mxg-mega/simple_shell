@@ -7,7 +7,7 @@
   *
   * Return: Always 0
   */
-int main(int ac __attribute__ ((unused)), char **av)
+int main(int __attribute__ ((unused)) ac, char **av)
 {
 	if (isatty(STDIN_FILENO) && isatty(STDOUT_FILENO) && isatty(STDERR_FILENO))
 	{
@@ -15,7 +15,7 @@ int main(int ac __attribute__ ((unused)), char **av)
 	}
 	else
 	{
-		non_interactive_shell(av[0]);
+		non_interactive_shell(av[0], av[1]);
 	}
 	return (0);
 }
