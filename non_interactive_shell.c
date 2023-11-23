@@ -44,8 +44,15 @@ void non_interactive_shell(char *program, char *cmd)
 		handle_child_fork(child);
 		if (child == 0)
 		{
-			char *args[2];
+			char **args;
 
+			args = malloc(sizeof(char *) * 2);
+			if (args == NULL)
+			{
+				perror("Unable to allocate memory for args\n");
+				free(buffer);
+				_exit(EXIT_FAILURE);
+			}
 			args[0] = token;
 			args[1] = NULL;
 			if (execve(args[0], args, environ) == FAIL)
