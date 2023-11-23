@@ -25,6 +25,7 @@ void non_interactive_shell(char *program, char *cmd)
 	if (cmd != NULL)
 	{
 		strncpy(buffer, cmd, BUFF_SIZE - 1);
+		buffer[BUFF_SIZE - 1] = '\0';
 	}
 	else
 	{
