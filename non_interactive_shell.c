@@ -28,6 +28,8 @@ void non_interactive_shell(char *program, char *cmd)
 	}
 	else
 	{
+		size_t bufflen;
+
 		r = read(STDIN_FILENO, buffer, BUFF_SIZE);
 		if (r == -1)
 		{
@@ -35,7 +37,8 @@ void non_interactive_shell(char *program, char *cmd)
 			free(buffer);
 			exit(EXIT_FAILURE);
 		}
-		buffer[strlen(buffer) - 1] = '\0';
+		bufflen = strlen(buffer);
+		buffer[bufflen - 1] = '\0';
 	}
 	token = strtok(buffer, "\n");
 	while (token != NULL){
