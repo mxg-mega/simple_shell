@@ -56,8 +56,8 @@ void non_interactive_shell(char *program, char *cmd)
 
 			if (execve(args[0], args, environ) == FAIL)
 			{
-				fprintf(stderr, "%s: No such file or directory\ncmd: %s\n",
-						program, buffer);
+				fprintf(stderr, "%s: No such file or directory\n",
+						program);
 				free(buffer);
 				free_args(args);
 				_exit(EXIT_FAILURE);
