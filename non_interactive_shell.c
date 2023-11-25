@@ -27,6 +27,7 @@ void non_interactive_shell(char *program, char *cmd)
 		perror("Memory Allocation Failed\n");
 		exit(EXIT_FAILURE);
 	}
+	memset(buffer, 0, BUFF_SIZE);
 	if (cmd != NULL)
 	{
 		strncpy(buffer, cmd, BUFF_SIZE - 1);
