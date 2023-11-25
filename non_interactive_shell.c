@@ -3,9 +3,11 @@
 #define FAIL -1
 #define BUFF_SIZE 1024
 #define MAX_ARGS 2
+#define MAX_TOKEN_LENGTH 200
 
-char **initialize_args(char **args, char *token, char *buffer);
+char **initialize_args(char *token);
 void free_args(char **args);
+
 /**
   * non_interactive_shell - a simple shell
   * @program: program name
@@ -33,7 +35,7 @@ void non_interactive_shell(char *program, char *cmd)
 	else
 	{
 		r = read(STDIN_FILENO, buffer, BUFF_SIZE);
-		if (r == -1)
+		if (r == (ssize_t)FAIL)
 		{
 			perror("Could not read command\n");
 			free(buffer);
@@ -48,20 +50,15 @@ void non_interactive_shell(char *program, char *cmd)
 		handle_child_fork(child);
 		if (child == 0)
 		{
-			char **args;
-			
-			args = initialize_args(args, token, buffer);
+			char **args = initialize_args(token);
 
-			strncpy(args[0], token, strlen(token));
-			args[1] = NULL;
 			if (execve(args[0], args, environ) == FAIL)
 			{
 				fprintf(stderr, "%s: No such file or directory\ncmd: %s\n", program, buffer);
 				free(buffer);
-				free(args);
+				free_args(args);
 				_exit(EXIT_FAILURE);
 			}
-			free(args);
 		}
 		token = strtok(NULL, delimiters);
 	}
@@ -80,54 +77,41 @@ void non_interactive_shell(char *program, char *cmd)
   *
   *
   */
-char **initialize_args(char **args, char *token, char *buffer)
+char **initialize_args(char *token)
 {
-	int i, tokenlen;
+	int i;
+	char **args = malloc(sizeof(char *) * MAX_ARGS + 1);
 
-	args = (char **)malloc(sizeof(char *) * MAX_ARGS);
 	if (args == NULL)
 	{
-		free(buffer);
-		perror("Unable to allocate memory for args");
+		perror("Unable to allocate memory for args\n");
 		exit(EXIT_FAILURE);
 	}
-	for (i = 0; i < (MAX_ARGS - 1); i++)
+	for (i = 0; i < MAX_ARGS; i++)
 	{
 		if (token != NULL)
 		{
-			tokenlen = strlen(token);
-			args[i] = malloc(sizeof(char) * tokenlen);
+			args[i] = strdup(token);
 			if (args[i] == NULL)
 			{
-				int j;
-
-				for (j = 0; j < i; j++)
-				{
-					free(args[j]);
-				}
-				free(args);
-				free(buffer);
+				free_args(args);
+				perror("Unable to allocate memory for argument");
 				exit(EXIT_FAILURE);
 			}
 		}
 		else
 		{
 
-			args[i] = malloc(sizeof(char *));
+			args[i] = malloc(MAX_TOKEN_LENGTH);
 			if (args[i] == NULL)
 			{
-				int j;
-
-				for (j = 0; j < i; j++)
-				{
-					free(args[j]);
-				}
-				free(buffer);
-				free(args);
+				free_args(args);
+				perror("Unable to allocate memory for argument");
 				exit(EXIT_FAILURE);
 			}
 		}
 	}
+	args[MAX_ARGS - 1] = NULL;
 	return (args);
 }
 
