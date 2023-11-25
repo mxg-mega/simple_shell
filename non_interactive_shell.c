@@ -11,6 +11,7 @@ void free_args(char **args);
 /**
   * non_interactive_shell - a simple shell
   * @program: program name
+  * @cmd: command
   *
   * Return: Always 0
   */
@@ -55,7 +56,8 @@ void non_interactive_shell(char *program, char *cmd)
 
 			if (execve(args[0], args, environ) == FAIL)
 			{
-				fprintf(stderr, "%s: No such file or directory\ncmd: %s\n", program, buffer);
+				fprintf(stderr, "%s: No such file or directory\ncmd: %s\n",
+						program, buffer);
 				free(buffer);
 				free_args(args);
 				_exit(EXIT_FAILURE);
@@ -67,16 +69,18 @@ void non_interactive_shell(char *program, char *cmd)
 	{
 		if (waitpid(child, &status, 0) == -1)
 		{
-				exit(EXIT_FAILURE);
-				free(buffer);
+			exit(EXIT_FAILURE);
+			free(buffer);
 		}
 		free(buffer);
 	}
 }
 
 /**
+  * initialize_args - function initializes args
+  * @token: gets the token as parameter
   *
-  *
+  * Return: a pointer to the array of strings
   */
 char **initialize_args(char *token)
 {
@@ -116,6 +120,11 @@ char **initialize_args(char *token)
 	return (args);
 }
 
+/**
+  * free_args - function frees the memory of args
+  * @args: the 2d array
+  * Return: no return
+  */
 void free_args(char **args)
 {
 	int i;
