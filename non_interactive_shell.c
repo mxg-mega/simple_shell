@@ -2,8 +2,9 @@
 
 #define FAIL -1
 #define BUFF_SIZE 1024
-#define MAX_ARGS 10
+#define MAX_ARGS 2
 
+char **initialize_args(char **args, char *token, char *buffer);
 void free_args(char **args);
 /**
   * non_interactive_shell - a simple shell
@@ -47,16 +48,20 @@ void non_interactive_shell(char *program, char *cmd)
 		handle_child_fork(child);
 		if (child == 0)
 		{
-			char *args[] = {NULL};
+			char **args;
+			
+			args = initialize_args(args, token, buffer);
 
-			args[0] = token;
+			strncpy(args[0], token, strlen(token));
 			args[1] = NULL;
 			if (execve(args[0], args, environ) == FAIL)
 			{
 				fprintf(stderr, "%s: No such file or directory\ncmd: %s\n", program, buffer);
 				free(buffer);
+				free(args);
 				_exit(EXIT_FAILURE);
 			}
+			free(args);
 		}
 		token = strtok(NULL, delimiters);
 	}
@@ -69,5 +74,71 @@ void non_interactive_shell(char *program, char *cmd)
 		}
 		free(buffer);
 	}
+}
+
+/**
+  *
+  *
+  */
+char **initialize_args(char **args, char *token, char *buffer)
+{
+	int i, tokenlen;
+
+	args = (char **)malloc(sizeof(char *) * MAX_ARGS);
+	if (args == NULL)
+	{
+		free(buffer);
+		perror("Unable to allocate memory for args");
+		exit(EXIT_FAILURE);
+	}
+	for (i = 0; i < (MAX_ARGS - 1); i++)
+	{
+		if (token != NULL)
+		{
+			tokenlen = strlen(token);
+			args[i] = malloc(sizeof(char) * tokenlen);
+			if (args[i] == NULL)
+			{
+				int j;
+
+				for (j = 0; j < i; j++)
+				{
+					free(args[j]);
+				}
+				free(args);
+				free(buffer);
+				exit(EXIT_FAILURE);
+			}
+		}
+		else
+		{
+
+			args[i] = malloc(sizeof(char *));
+			if (args[i] == NULL)
+			{
+				int j;
+
+				for (j = 0; j < i; j++)
+				{
+					free(args[j]);
+				}
+				free(buffer);
+				free(args);
+				exit(EXIT_FAILURE);
+			}
+		}
+	}
+	return (args);
+}
+
+void free_args(char **args)
+{
+	int i;
+
+	for (i = 0; i < MAX_ARGS; i++)
+	{
+		free(args[i]);
+	}
+	free(args);
 }
 
