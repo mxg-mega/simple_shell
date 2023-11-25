@@ -11,19 +11,19 @@
 void interactive_shell(char *program)
 {
 	int status;
-	char *input;
+	char *input = NULL;
 	pid_t child;
 
-	while (!feof(stdin))
+	while (1)
 	{
-		prompt("#cisfun$");
-		input = readInput();
 		child = fork();
 		handle_child_fork(child);
 		if (child == 0)
 		{
 			char *args[2];
 
+			prompt("#cisfun$");
+			input = readInput();
 			args[0] = input;
 			args[1] = NULL;
 			if (execve(input, args, NULL) == -1)
