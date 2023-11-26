@@ -44,6 +44,11 @@ void non_interactive_shell(char *program, char *cmd)
 			free(buffer);
 			exit(EXIT_FAILURE);
 		}
+		if (buffer == NULL)
+		{
+			free(buffer);
+			_exit(EXIT_SUCCESS);
+		}
 		buffer[BUFF_SIZE - 1] = '\0';
 	}
 	token = strtok(buffer, delimiters);
@@ -65,7 +70,12 @@ void non_interactive_shell(char *program, char *cmd)
 				i++;
 				arg_token = strtok(NULL, del);
 			}
-
+			if (buffer == NULL || args[0] == NULL)
+			{
+				free(buffer);
+				free_args(args);
+				_exit(EXIT_SUCCESS);
+			}
 			if (execve(args[0], args, environ) == FAIL)
 			{
 				fprintf(stderr, "%s: No such file or directory\n",
