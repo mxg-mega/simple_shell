@@ -54,38 +54,50 @@ void non_interactive_shell(char *program, char *cmd)
 	token = strtok(buffer, delimiters);
 	while (token != NULL)
 	{
+		char *arg_token = NULL, *del = " \t\n", *binary_path;
+		char **args;
+		int i = 0;
+
+		args = initialize_args();
+		arg_token = strtok(token, del);
+		while (arg_token != NULL && i < MAX_ARGS)
+		{
+			set_args_elements(args, arg_token, i);
+			i++;
+			arg_token = strtok(NULL, del);
+		}
+		set_args_elements(args, NULL, i);
+		if (buffer == NULL || args[0] == NULL)
+		{
+			free(buffer);
+			free_args(args);
+			_exit(EXIT_SUCCESS);
+		}
+		binary_path = searchInPath(args[0]);
+		if (binary_path == NULL)
+		{
+			perror("Command Not Found\n");
+			free(buffer);
+			free_args(args);
+			free(binary_path);
+			exit(EXIT_FAILURE);
+		}
 		child = fork();
 		handle_child_fork(child);
 		if (child == 0)
 		{
-			char *arg_token = NULL, *del = " \t\n";
-			char **args;
-			int i = 0;
-
-			args = initialize_args();
-			arg_token = strtok(token, del);
-			while (arg_token != NULL && i < MAX_ARGS)
+			if (execve(binary_path, args, environ) == FAIL)
 			{
-				set_args_elements(args, arg_token, i);
-				i++;
-				arg_token = strtok(NULL, del);
-			}
-			if (buffer == NULL || args[0] == NULL)
-			{
+				fprintf(stderr, "%s: No such file or directory\nbinaryPath: %s\n", program, binary_path);
 				free(buffer);
 				free_args(args);
-				_exit(EXIT_SUCCESS);
-			}
-			if (execve(args[0], args, environ) == FAIL)
-			{
-				fprintf(stderr, "%s: No such file or directory\n",
-						program);
-				free(buffer);
-				free_args(args);
+				free(binary_path);
 				_exit(EXIT_FAILURE);
 			}
 		}
 		token = strtok(NULL, delimiters);
+		free_args(args);
+		free(binary_path);
 	}
 	if (child > 0)
 	{

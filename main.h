@@ -21,5 +21,7 @@ void interactive_shell(char *program);
 void handle_child_fork(pid_t child);
 char *readInput(void);
 void tokenizeInput(char *buffer, char **argv);
+char *searchInPath(char *command);
+char *getBinaryPath(char *command);
 
 #endif/*MAIN_H*/
