@@ -2,11 +2,12 @@
 
 #define FAIL -1
 #define BUFF_SIZE 1024
-#define MAX_ARGS 2
+#define MAX_ARGS 64
 #define MAX_TOKEN_LENGTH 200
 
-char **initialize_args(char *token);
+char **initialize_args(void);
 void free_args(char **args);
+void set_args_elements(char **args, char *token, int pos);
 
 /**
   * non_interactive_shell - a simple shell
@@ -20,7 +21,7 @@ void non_interactive_shell(char *program, char *cmd)
 	int status;
 	ssize_t r;
 	pid_t child;
-	char *buffer, *token = NULL, *delimiters = " \n\t";
+	char *buffer, *token = NULL, *delimiters = "\n\t";
 
 	buffer = malloc(BUFF_SIZE);
 	if (buffer == NULL)
@@ -52,7 +53,18 @@ void non_interactive_shell(char *program, char *cmd)
 		handle_child_fork(child);
 		if (child == 0)
 		{
-			char **args = initialize_args(token);
+			char *arg_token = NULL, *del = " \t\n";
+			char **args;
+			int i = 0;
+
+			args = initialize_args();
+			arg_token = strtok(token, del);
+			while (arg_token != NULL && i < MAX_ARGS)
+			{
+				set_args_elements(args, arg_token, i);
+				i++;
+				arg_token = strtok(NULL, del);
+			}
 
 			if (execve(args[0], args, environ) == FAIL)
 			{
@@ -78,11 +90,10 @@ void non_interactive_shell(char *program, char *cmd)
 
 /**
   * initialize_args - function initializes args
-  * @token: gets the token as parameter
   *
   * Return: a pointer to the array of strings
   */
-char **initialize_args(char *token)
+char **initialize_args(void)
 {
 	int i;
 	char **args = malloc(sizeof(char *) * MAX_ARGS + 1);
@@ -92,6 +103,11 @@ char **initialize_args(char *token)
 		perror("Unable to allocate memory for args\n");
 		exit(EXIT_FAILURE);
 	}
+	for (i = 0; i < MAX_ARGS; i++)
+	{
+		args[i] = NULL;
+	}
+	/*
 	for (i = 0; i < MAX_ARGS; i++)
 	{
 		if (token != NULL)
@@ -115,9 +131,17 @@ char **initialize_args(char *token)
 				exit(EXIT_FAILURE);
 			}
 		}
-	}
+	}*/
 	args[MAX_ARGS - 1] = NULL;
 	return (args);
+}
+
+void set_args_elements(char **args, char *token, int pos)
+{
+	if (token != NULL)
+	{
+		args[pos] = strdup(token);
+	}
 }
 
 /**
