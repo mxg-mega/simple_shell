@@ -9,7 +9,8 @@
 char *searchInPath(char *command)
 {
 	char *path = getenv("PATH");
-	char *token, *delim = ":";
+	char *token, *delim = " :\n", *file = NULL;
+	int slashCount = 0;
 	struct stat fileInfo;
 
 	if (command == NULL)
@@ -17,12 +18,33 @@ char *searchInPath(char *command)
 		perror("command is null\n");
 		return (NULL);
 	}
-	token = strtok(path, delim);
-	while (token != NULL)
+	if (command[0] == '/')
 	{
+		file = strdup(command);
+		return (file);
+	}
+	else
+	{
+		int i;
+
+		for (i = 0; command[i] != '\0'; i++)
+		{
+			if (command[i] == '/')
+			{
+				slashCount++;
+			}
+		}
+	}
+
+	if (slashCount == 0)
+	{
+		token = strtok(path, delim);
+		while (token != NULL)
+		{
 		char *filepath = malloc(strlen(token) + strlen(command) + 2);
 		if (filepath == NULL)
 		{
+			perror("Unable to Allocate Memory for filepath\n");
 			return (NULL);
 		}
 
@@ -31,11 +53,18 @@ char *searchInPath(char *command)
 		printf("%s\n", filepath);
 		if (access(filepath, X_OK) == 0 && stat(filepath, &fileInfo) == 0)
 		{
-			return (filepath);
+			file = strdup(filepath);
+			free(filepath);
+			break;
 		}
 		free(filepath);
 		token = strtok(NULL, delim);
+		}
 	}
-	return (NULL);
+	else
+	{
+		return (strdup(command));
+	}
+	return (file);
 }
 

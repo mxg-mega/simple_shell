@@ -74,14 +74,16 @@ void non_interactive_shell(char *program, char *cmd)
 			_exit(EXIT_SUCCESS);
 		}
 		binary_path = searchInPath(args[0]);
+		/*
 		if (binary_path == NULL)
 		{
 			perror("Command Not Found\n");
+			perror(binary_path);
 			free(buffer);
 			free_args(args);
 			free(binary_path);
 			exit(EXIT_FAILURE);
-		}
+		}*/
 		child = fork();
 		handle_child_fork(child);
 		if (child == 0)
