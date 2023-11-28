@@ -23,5 +23,6 @@ char *readInput(void);
 void tokenizeInput(char *buffer, char **argv);
 char *searchInPath(char *command);
 char *getBinaryPath(char *command);
+int execute(char *binary_path, char **args, char *program);
 
 #endif/*MAIN_H*/
