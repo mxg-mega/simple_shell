@@ -3,14 +3,14 @@
 /**
   * tokenizeInput - tokenizes the buffer
   * @buffer: the string
-  * @argv: yhe exection array
+  * @argv: the execution array of arguments
   *
-  * Return:
+  * Return: no return
   */
 void tokenizeInput(char *buffer, char **argv)
 {
 	unsigned int i = 0;
-	char *token, *delimiter = " \t\n";
+	char *token, *delimiter = " \n\t";
 
 	token = strtok(buffer, delimiter);
 	while (token != NULL)

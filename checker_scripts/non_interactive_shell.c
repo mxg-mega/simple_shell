@@ -20,7 +20,7 @@ void non_interactive_shell(char *program, char *cmd)
 {
 	int status, child;
 	ssize_t r;
-	char *buffer, *token = NULL, *delimiters = "\n\t";
+	char *buffer, *token = NULL, *delimiters = "\n\t\0";
 
 	buffer = malloc(BUFF_SIZE);
 	if (buffer == NULL)
@@ -53,13 +53,20 @@ void non_interactive_shell(char *program, char *cmd)
 	token = strtok(buffer, delimiters);
 	while (token != NULL)
 	{
-		char *arg_token = NULL, *del = " \t\n";
-		char **args;
+		char *arg_token = NULL, *del = " \t\n\0";
 		char *binary_path = NULL;
-		int i = 0;
+		char **args;
+		int i;
 
 		args = initialize_args();
+		if (args == NULL)
+		{
+			free_args(args);
+			free(buffer);
+			_exit(EXIT_FAILURE);
+		}
 		arg_token = strtok(token, del);
+		i = 0;
 		while (arg_token != NULL && i < MAX_ARGS)
 		{
 			set_args_elements(args, arg_token, i);
@@ -70,6 +77,7 @@ void non_interactive_shell(char *program, char *cmd)
 		if (buffer == NULL || args[0] == NULL)
 		{
 			free(buffer);
+			free(binary_path);
 			free_args(args);
 			_exit(EXIT_SUCCESS);
 		}
@@ -77,34 +85,89 @@ void non_interactive_shell(char *program, char *cmd)
 		if (args[0] != NULL)
 		{
 			binary_path = searchInPath(args[0]);
-
 			if (binary_path == NULL)
 			{
 				fprintf(stderr, "Command '%s' not found\n", args[0]);
 				free(buffer);
 				free_args(args);
+				free(binary_path);
 				exit(EXIT_FAILURE);
 			}
-		}
-
-		if ((child = execute(binary_path, args, program)) == -1)
-		{
-			free(buffer);
-			free_args(args);
-			break;
+			else if (binary_path != NULL)
+			{
+				if ((child = execute(binary_path, args, program)) == -1)
+				{
+					free(buffer);
+					free_args(args);
+					free(binary_path);
+					exit(EXIT_FAILURE);
+				}
+			}
 		}
 		token = strtok(NULL, delimiters);
 		free_args(args);
+		free(binary_path);
 	}
+		char *arg_token = NULL, *del = " \t\n\0";
+		char *binary_path = NULL;
+		char **args;
+		int i;
+
+		args = initialize_args();
+		if (args == NULL)
+		{
+			free_args(args);
+			free(buffer);
+			_exit(EXIT_FAILURE);
+		}
+		arg_token = strtok(token, del);
+		i = 0;
+		while (arg_token != NULL && i < MAX_ARGS)
+		{
+			set_args_elements(args, arg_token, i);
+			i++;
+			arg_token = strtok(NULL, del);
+		}
+		set_args_elements(args, NULL, i);
+		if (buffer == NULL || args[0] == NULL)
+		{
+			free(buffer);
+			free(binary_path);
+			free_args(args);
+			_exit(EXIT_SUCCESS);
+		}
+
+		if (args[0] != NULL)
+		{
+			binary_path = searchInPath(args[0]);
+			if (binary_path == NULL)
+			{
+				fprintf(stderr, "Command '%s' not found\n", args[0]);
+				free(buffer);
+				free_args(args);
+				free(binary_path);
+				exit(EXIT_FAILURE);
+			}
+			else if (binary_path != NULL)
+			{
+				if ((child = execute(binary_path, args, program)) == -1)
+				{
+					free(buffer);
+					free_args(args);
+					free(binary_path);
+					exit(EXIT_FAILURE);
+				}
+			}
 	if (child > 0)
 	{
 		if (waitpid(child, &status, 0) == -1)
 		{
-			exit(EXIT_FAILURE);
 			free(buffer);
+			exit(EXIT_FAILURE);
 		}
 		free(buffer);
 	}
+	exit(EXIT_SUCCESS);
 }
 
 /**
@@ -120,38 +183,12 @@ char **initialize_args(void)
 	if (args == NULL)
 	{
 		perror("Unable to allocate memory for args\n");
-		exit(EXIT_FAILURE);
+		return (NULL);
 	}
 	for (i = 0; i < MAX_ARGS; i++)
 	{
 		args[i] = NULL;
 	}
-	/*
-	for (i = 0; i < MAX_ARGS; i++)
-	{
-		if (token != NULL)
-		{
-			args[i] = strdup(token);
-			if (args[i] == NULL)
-			{
-				free_args(args);
-				perror("Unable to allocate memory for argument");
-				exit(EXIT_FAILURE);
-			}
-		}
-		else
-		{
-
-			args[i] = malloc(MAX_TOKEN_LENGTH);
-			if (args[i] == NULL)
-			{
-				free_args(args);
-				perror("Unable to allocate memory for argument");
-				exit(EXIT_FAILURE);
-			}
-		}
-	}*/
-	args[MAX_ARGS - 1] = NULL;
 	return (args);
 }
 

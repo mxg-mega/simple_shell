@@ -15,7 +15,7 @@ int main(int __attribute__ ((unused)) ac, char **av)
 	}
 	else
 	{
-		non_interactive_shell(av[0], av[1]);
+		nonInteractive_shell(av[0], av[1]);
 	}
 	return (0);
 }

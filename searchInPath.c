@@ -41,28 +41,29 @@ char *searchInPath(char *command)
 		token = strtok(path, delim);
 		while (token != NULL)
 		{
-		char *filepath = malloc(strlen(token) + strlen(command) + 2);
-		if (filepath == NULL)
-		{
-			perror("Unable to Allocate Memory for filepath\n");
-			return (NULL);
-		}
+			char *filepath = malloc(strlen(token) + strlen(command) + 2);
+			if (filepath == NULL)
+			{
+				perror("Unable to Allocate Memory for filepath\n");
+				return (NULL);
+			}
 
-		sprintf(filepath, "%s/%s", token, command);
+			sprintf(filepath, "%s/%s", token, command);
 
-		printf("%s\n", filepath);
-		if (access(filepath, X_OK) == 0 && stat(filepath, &fileInfo) == 0)
-		{
-			file = strdup(filepath);
+			printf("%s\n", filepath);
+			if (access(filepath, X_OK) == 0 && stat(filepath, &fileInfo) == 0)
+			{
+				file = strdup(filepath);
+				free(filepath);
+				break;
+			}
 			free(filepath);
-			break;
-		}
-		free(filepath);
-		token = strtok(NULL, delim);
+			token = strtok(NULL, delim);
 		}
 	}
 	else
 	{
+		free(file);
 		return (strdup(command));
 	}
 	return (file);

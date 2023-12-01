@@ -16,7 +16,7 @@
 extern char **environ;
 
 void prompt(char *text);
-void non_interactive_shell(char *program, char *cmd);
+void nonInteractive_shell(char *program, char *cmd);
 void interactive_shell(char *program);
 void handle_child_fork(pid_t child);
 char *readInput(void);
