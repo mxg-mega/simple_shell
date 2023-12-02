@@ -21,6 +21,7 @@ int execute(char *binary_path, char **args, char *program)
 			fprintf(stderr, "%s: No such file or directory\nbinaryPath: %s\n", program, binary_path);
 			return (-1);
 		}
+		exit(EXIT_SUCCESS);
 	}
 	return (child);
 }

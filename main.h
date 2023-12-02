@@ -12,6 +12,7 @@
 #include <sys/wait.h>
 
 #define FAIL -1
+#define MAX_ARGS 64
 
 extern char **environ;
 

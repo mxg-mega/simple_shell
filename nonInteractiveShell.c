@@ -6,8 +6,9 @@
 #define MAX_TOKEN_LENGTH 200
 
 char **initialize_args(char **args);
-void free_args(char **args);
+void free_args(char **args, int memsize);
 void set_args_elements(char **args, char *token, int pos);
+int countLines(char *buffer, char *delimiters);
 
 /**
   * non_interactive_shell - a simple shell
@@ -18,10 +19,10 @@ void set_args_elements(char **args, char *token, int pos);
   */
 void nonInteractive_shell(char *program, char *cmd)
 {
-	int status, child, lineNum, i;
+	int status, child, lineNum, i, j, k;
 	ssize_t r;
-	char *buffer, *token = NULL, *delimiters = "\n";
-	char *argsLines[] = {NULL};
+	char *buffer, *token = NULL, *delimiters = " \n\t";
+	char **argsLines;
 	char **args;
 
 	buffer = malloc(BUFF_SIZE);
@@ -52,34 +53,53 @@ void nonInteractive_shell(char *program, char *cmd)
 		}
 		buffer[BUFF_SIZE - 1] = '\0';
 	}
+
+	lineNum = countLines(buffer, delimiters);
+	argsLines = malloc(sizeof(char *) * (lineNum + 1));
+	if (argsLines == NULL)
+	{
+		free(buffer);
+		exit(EXIT_FAILURE);
+	}
+
+	for (j = 0; j <= lineNum; j++)
+	{
+		argsLines[j] = NULL;
+	}
+
+	k = 0;
 	token = strtok(buffer, delimiters);
-	lineNum = 0;
 	while (token != NULL)
 	{
-		argsLines[lineNum] = token;
-		lineNum++;
+		argsLines[k] = strdup(token);
+		k++;
 		token = strtok(NULL, delimiters);
 	}
-	argsLines[lineNum] = NULL;
+	argsLines[k] = NULL;
 
 	for (i = 0; argsLines[i] != NULL; i++)
 	{
 		args = initialize_args(args);
 		if (args == NULL)
 		{
+			perror("Failed to allocate memory\n");
 			exit(EXIT_FAILURE);
 		}
+
 		tokenizeInput(argsLines[i], args);
-		if (buffer == NULL || args[0] == NULL)
+
+		if (args[0] != NULL)
 		{
-			_exit(EXIT_SUCCESS);
+			if ((child = execute(args[0], args, program)) == FAIL)
+			{
+				perror("Execution failed\n");
+				exit(EXIT_FAILURE);
+			}
+			printf("%s\n", args[0]);
 		}
-		if ((child = execute(args[0], args, program)) == FAIL)
-		{
-			exit(EXIT_FAILURE);
-		}
-		free_args(args);
+		free_args(args, MAX_ARGS);
 	}
+	printf("%d\n", lineNum);
 	if (child > 0)
 	{
 		if (waitpid(child, &status, WUNTRACED) == -1)
@@ -87,7 +107,29 @@ void nonInteractive_shell(char *program, char *cmd)
 			free(buffer);
 			exit(EXIT_FAILURE);
 		}
+		free(buffer);
+		free_args(argsLines, lineNum);
 	}
+}
+
+int countLines(char *buffer, char *delimiters)
+{
+	int lineNum;
+	char *token = NULL;
+
+	if (buffer == NULL || delimiters == NULL)
+	{
+		perror("Buffer or delimiters are NULL\n");
+		return (0);
+	}
+	token = strtok(buffer, delimiters);
+	lineNum = 0;
+	while (token != NULL)
+	{
+		lineNum++;
+		token = strtok(NULL, delimiters);
+	}
+	return (lineNum);
 }
 
 /**
@@ -109,7 +151,7 @@ char **initialize_args(char **args)
 	{
 		args[i] = NULL;
 	}
-	args[MAX_ARGS - 1] = NULL;
+
 	return (args);
 }
 
@@ -119,6 +161,10 @@ void set_args_elements(char **args, char *token, int pos)
 	{
 		args[pos] = strdup(token);
 	}
+	else
+	{
+		args[pos] = NULL;
+	}
 }
 
 /**
@@ -126,11 +172,11 @@ void set_args_elements(char **args, char *token, int pos)
   * @args: the 2d array
   * Return: no return
   */
-void free_args(char **args)
+void free_args(char **args, int memsize)
 {
 	int i;
 
-	for (i = 0; i < MAX_ARGS; i++)
+	for (i = 0; i < memsize; i++)
 	{
 		free(args[i]);
 	}
