@@ -1,6 +1,10 @@
 #include "main.h"
 
-
+/**
+  * nonInteractiveMode - function allows the interpreter to execute multiple commands
+  * @program: name of the shell
+  * Return: no return
+ */
 void nonInteractiveMode(char *program)
 {
 	char *buffer, *delimiters = " \n";
@@ -18,7 +22,11 @@ void nonInteractiveMode(char *program)
 	while (fgets(buffer, buffsize, stdin))
 	{
 		printf("%s", buffer);
-		addCommandNode(&head, buffer);
+		if (addCommandNode(&head, buffer) == NULL)
+		{
+			free(buffer);
+			exit(EXIT_FAILURE);
+		}
 	}
 
 	current = head;
@@ -84,6 +92,11 @@ void nonInteractiveMode(char *program)
 	}
 }
 
+/**
+  * countArgs - function counts the number of lines read by the systemcall read
+  * @cmd: the command that is the buffer
+  * Return: the number of lines or 0 if failed
+ */
 int countArgs(char *cmd)
 {
 	char *token;
