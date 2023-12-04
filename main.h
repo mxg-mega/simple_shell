@@ -24,13 +24,20 @@ typedef struct command
 	struct command *nextCmd;
 }cmd_t;
 
+typedef struct node
+{
+	char *dir;
+	struct node *node;
+} node_t;
+
+node_t *path_dir(char *varname);
 
 cmd_t *addCommandNode(cmd_t **head, const char *newCommand);
 int countNode(cmd_t *head);
 char *get_next_line(char *buffer);
 int countArgs(char *cmd);
 void free_list(cmd_t *head);
-void nonInteractiveMode(void);
+void nonInteractiveMode(char *program);
 
 char *_strtok(char *input, char *delimiter);
 
@@ -43,7 +50,7 @@ void tokenizeInput(char *buffer, char **argv);
 char *searchInPath(char *command);
 char *getBinaryPath(char *command);
 int execute(char *binary_path, char **args, char *program);
-/*char **initialize_args(char **args);*/
+char **initialize_args(char **args);
 void free_args(char **args, int memsize);
 void set_args_elements(char **args, char *token, int pos);
 int countLines(char *buffer, char *delimiters);

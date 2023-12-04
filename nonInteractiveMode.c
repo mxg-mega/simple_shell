@@ -1,11 +1,11 @@
 #include "main.h"
 
 
-void nonInteractiveMode(void)
+void nonInteractiveMode(char *program)
 {
-	char *buffer, *token, *delimiters = " \n";
+	char *buffer, *delimiters = " \n";
 	size_t buffsize = (size_t)BUFF_SIZE;
-/*	int inputStatus;*/
+	pid_t child;
 	cmd_t *head = NULL, *current = NULL;
 
 	buffer = malloc(sizeof(char) * buffsize);
@@ -20,33 +20,20 @@ void nonInteractiveMode(void)
 		printf("%s", buffer);
 		addCommandNode(&head, buffer);
 	}
-/*	inputStatus = read(STDIN_FILENO, buffer, buffsize);
-	if (inputStatus == FAIL)
-	{
-		free(buffer);
-		exit(EXIT_FAILURE);
-	}
-	if (buffer == NULL)
-	{
-		free(buffer);
-		exit(EXIT_SUCCESS);
-	}
-	buffer[buffsize - 1] = '\0';
-	bufflen = strlen(buffer);
-	printf("%s\n%ld\n", buffer, bufflen);
 
-	token = _strtok(buffer, delimiters);
-	while (token != NULL)
-	{
-		addCommandNode(&head, token);
-		token = _strtok(NULL, delimiters);
-	}
-*/
 	current = head;
 	while (current != NULL)
 	{
-		char *dup;
+		char *dup, *token;
+		int i = 0;
+		char **args;
 
+		args = initialize_args(args);
+		if (args == NULL)
+		{
+			free_args(args, MAX_ARGS);
+			break;
+		}
 		dup = strdup(current->command);
 		if (dup == NULL)
 		{
@@ -56,16 +43,45 @@ void nonInteractiveMode(void)
 		while (token != NULL)
 		{
 			printf("token[%s]\n", token);
+			set_args_elements(args , token, i);
+			i++;
 			token = strtok(NULL, delimiters);
+		}
+		if (args[0] == NULL)
+		{
+			free(token);
+			free(dup);
+			free_args(args, i);
+			break;
+		}
+		if ((child = execute(args[0], args, program)) == -1)
+		{
+			free(dup);
+			free(token);
+			free_args(args, i);
+			break;
 		}
 		printf("%s, %d\n", current->command, countArgs(current->command));
 		current = current->nextCmd;
 		free(dup);
+		free(token);
+		free_args(args, i);
 	}
 	printf("%d\n", countNode(head));
 
-	free_list(head);
-	free(buffer);
+	if (child > 0)
+	{
+		int status;
+
+		if (waitpid(child, &status, 0) == -1)
+		{
+			free(buffer);
+			free_list(head);
+			exit(EXIT_FAILURE);
+		}
+		free_list(head);
+		free(buffer);
+	}
 }
 
 int countArgs(char *cmd)
@@ -99,4 +115,27 @@ int countNode(cmd_t *head)
 	}
 	return (count);
 }
+
+/*	inputStatus = read(STDIN_FILENO, buffer, buffsize);
+	if (inputStatus == FAIL)
+	{
+		free(buffer);
+		exit(EXIT_FAILURE);
+	}
+	if (buffer == NULL)
+	{
+		free(buffer);
+		exit(EXIT_SUCCESS);
+	}
+	buffer[buffsize - 1] = '\0';
+	bufflen = strlen(buffer);
+	printf("%s\n%ld\n", buffer, bufflen);
+
+	token = _strtok(buffer, delimiters);
+	while (token != NULL)
+	{
+		addCommandNode(&head, token);
+		token = _strtok(NULL, delimiters);
+	}
+*/
 

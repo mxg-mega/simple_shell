@@ -5,7 +5,6 @@
 #define MAX_ARGS 64
 #define MAX_TOKEN_LENGTH 200
 
-char **initialize_args(void);
 void free_args(char **args, int memsize);
 void set_args_elements(char **args, char *token, int pos);
 
@@ -56,7 +55,7 @@ void non_interactive_shell(char *program, char *cmd)
 		char **args;
 		int i;
 
-		args = initialize_args();
+		args = initialize_args(args);
 		if (args == NULL)
 		{
 			free_args(args, MAX_ARGS);
@@ -96,7 +95,6 @@ void non_interactive_shell(char *program, char *cmd)
 		free(binary_path);
 	}
 
-	close(STDIN_FILENO);
 	if (child > 0)
 	{
 		if (waitpid(child, &status, 0) == -1)
@@ -113,10 +111,10 @@ void non_interactive_shell(char *program, char *cmd)
   *
   * Return: a pointer to the array of strings
   */
-char **initialize_args(void)
+char **initialize_args(char **args)
 {
 	int i;
-	char **args = malloc(sizeof(char *) * MAX_ARGS + 1);
+	args = malloc(sizeof(char *) * (MAX_ARGS + 2));
 
 	if (args == NULL)
 	{
