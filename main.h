@@ -9,6 +9,7 @@
 #include <signal.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <ctype.h>
 #include <sys/wait.h>
 
 #define FAIL -1
@@ -38,6 +39,7 @@ char *get_next_line(char *buffer);
 int countArgs(char *cmd);
 void free_list(cmd_t *head);
 void nonInteractiveMode(char *program);
+char *trimWhitespace(char *str);
 
 char *_strtok(char *input, char *delimiter);
 

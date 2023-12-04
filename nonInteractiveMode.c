@@ -1,5 +1,7 @@
 #include "main.h"
 
+void trimWhitespaces(char *str);
+
 /**
   * nonInteractiveMode - function allows the interpreter to execute multiple commands
   * @program: name of the shell
@@ -7,7 +9,7 @@
  */
 void nonInteractiveMode(char *program)
 {
-	char *buffer, *delimiters = " \n";
+	char *buffer = NULL, *delimiters = " \n";
 	size_t buffsize = (size_t)BUFF_SIZE;
 	pid_t child;
 	cmd_t *head = NULL, *current = NULL;
@@ -21,7 +23,14 @@ void nonInteractiveMode(char *program)
 
 	while (fgets(buffer, buffsize, stdin))
 	{
+		trimWhitespaces(buffer);
+
+		if (buffer[0] == '\0')
+		{
+			continue;
+		}
 		printf("%s", buffer);
+
 		if (addCommandNode(&head, buffer) == NULL)
 		{
 			free(buffer);
@@ -45,6 +54,7 @@ void nonInteractiveMode(char *program)
 		dup = strdup(current->command);
 		if (dup == NULL)
 		{
+			free_args(args, MAX_ARGS);
 			break;
 		}
 		token = strtok(dup, delimiters);
@@ -57,23 +67,20 @@ void nonInteractiveMode(char *program)
 		}
 		if (args[0] == NULL)
 		{
-			free(token);
 			free(dup);
-			free_args(args, i);
+			free_args(args, MAX_ARGS);
 			break;
 		}
 		if ((child = execute(args[0], args, program)) == -1)
 		{
 			free(dup);
-			free(token);
-			free_args(args, i);
+			free_args(args, MAX_ARGS);
 			break;
 		}
 		printf("%s, %d\n", current->command, countArgs(current->command));
 		current = current->nextCmd;
 		free(dup);
-		free(token);
-		free_args(args, i);
+		free_args(args, MAX_ARGS);
 	}
 	printf("%d\n", countNode(head));
 
@@ -90,6 +97,8 @@ void nonInteractiveMode(char *program)
 		free_list(head);
 		free(buffer);
 	}
+	free(buffer);
+	free_list(head);
 }
 
 /**
@@ -127,6 +136,37 @@ int countNode(cmd_t *head)
 		current = current->nextCmd;
 	}
 	return (count);
+}
+
+/**
+ * trimWhitespaces - trims leading and trailing whitespaces in place
+ * @str: the string to trim
+ */
+void trimWhitespaces(char *str)
+{
+	int start, end, len, i;
+
+	if (str == NULL)
+	{
+		return;
+	}
+	len = strlen(str);
+	for (start = 0; start < len && isspace((unsigned char)str[start]); start++)
+		;
+
+	if (start == len)
+	{
+		str[0] = '\0';
+		return;
+	}
+
+	for (end = len - 1; end >= 0 && isspace((unsigned char)str[end]); end--)
+		;
+
+	for (i = 0; i <= end - start; i++)
+		str[i] = str[start + i];
+
+	str[end - start + 1] = '\0';
 }
 
 /*	inputStatus = read(STDIN_FILENO, buffer, buffsize);
