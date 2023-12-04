@@ -15,6 +15,12 @@ cmd_t *addCommandNode(cmd_t **head, const char *newCommand)
 		return (NULL);
 	}
 	newNode->command = strdup(newCommand);
+	if (newNode->command == NULL)
+	{
+		free(newNode);
+		return (NULL);
+	}
+	printf("Added node with command: %s\n", newNode->command);
 	newNode->nextCmd = NULL;
 
 	if (*head == NULL)

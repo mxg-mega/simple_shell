@@ -3,7 +3,7 @@
 
 void nonInteractiveMode(void)
 {
-	char *buffer; /* , *token, *delimiters = "\n"; */
+	char *buffer, *token, *delimiters = " \n";
 	size_t buffsize = (size_t)BUFF_SIZE;
 /*	int inputStatus;*/
 	cmd_t *head = NULL, *current = NULL;
@@ -17,7 +17,7 @@ void nonInteractiveMode(void)
 
 	while (fgets(buffer, buffsize, stdin))
 	{
-		printf("%s\n", buffer);
+		printf("%s", buffer);
 		addCommandNode(&head, buffer);
 	}
 /*	inputStatus = read(STDIN_FILENO, buffer, buffsize);
@@ -45,8 +45,22 @@ void nonInteractiveMode(void)
 	current = head;
 	while (current != NULL)
 	{
+		char *dup;
+
+		dup = strdup(current->command);
+		if (dup == NULL)
+		{
+			break;
+		}
+		token = strtok(dup, delimiters);
+		while (token != NULL)
+		{
+			printf("token[%s]\n", token);
+			token = strtok(NULL, delimiters);
+		}
 		printf("%s, %d\n", current->command, countArgs(current->command));
 		current = current->nextCmd;
+		free(dup);
 	}
 	printf("%d\n", countNode(head));
 
