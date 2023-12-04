@@ -19,11 +19,12 @@ int countLines(char *buffer, char *delimiters);
   */
 void nonInteractive_shell(char *program, char *cmd)
 {
-	int status, child, lineNum, i, j, k;
+	int lineNum, k, j;
+	/*int child, status, j;*/
 	ssize_t r;
-	char *buffer, *token = NULL, *delimiters = " \n\t";
+	char *buffer, *token, *delimiters = "\n";
 	char **argsLines;
-	char **args;
+	/*char **args; */
 
 	buffer = malloc(BUFF_SIZE);
 	if (buffer == NULL)
@@ -54,6 +55,7 @@ void nonInteractive_shell(char *program, char *cmd)
 		buffer[BUFF_SIZE - 1] = '\0';
 	}
 
+	printf("%s\n", buffer);
 	lineNum = countLines(buffer, delimiters);
 	argsLines = malloc(sizeof(char *) * (lineNum + 1));
 	if (argsLines == NULL)
@@ -72,17 +74,29 @@ void nonInteractive_shell(char *program, char *cmd)
 	while (token != NULL)
 	{
 		argsLines[k] = strdup(token);
+		if (argsLines == NULL)
+		{
+			perror("Failed to duplicate token\n");
+			break;
+		}
 		k++;
+		printf("%s, %d\n", token, k);
 		token = strtok(NULL, delimiters);
 	}
 	argsLines[k] = NULL;
 
-	for (i = 0; argsLines[i] != NULL; i++)
+	printf("%s, %d\n", program, lineNum);
+	free_args(argsLines, lineNum);
+	free(buffer);
+	/*for (i = 0; argsLines[i] != NULL; i++)
 	{
 		args = initialize_args(args);
 		if (args == NULL)
 		{
 			perror("Failed to allocate memory\n");
+			free(buffer);
+			free_args(args, MAX_ARGS);
+			free_args(argsLines, lineNum);
 			exit(EXIT_FAILURE);
 		}
 
@@ -93,9 +107,13 @@ void nonInteractive_shell(char *program, char *cmd)
 			if ((child = execute(args[0], args, program)) == FAIL)
 			{
 				perror("Execution failed\n");
+				free(buffer);
+				free_args(argsLines, lineNum);
+				free_args(args, MAX_ARGS);
 				exit(EXIT_FAILURE);
 			}
-			printf("%s\n", args[0]);
+
+			printf("%s\n", argsLines[i]);
 		}
 		free_args(args, MAX_ARGS);
 	}
@@ -105,11 +123,12 @@ void nonInteractive_shell(char *program, char *cmd)
 		if (waitpid(child, &status, WUNTRACED) == -1)
 		{
 			free(buffer);
+			free_args(argsLines, lineNum);
 			exit(EXIT_FAILURE);
 		}
 		free(buffer);
 		free_args(argsLines, lineNum);
-	}
+	}*/
 }
 
 int countLines(char *buffer, char *delimiters)

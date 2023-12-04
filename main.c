@@ -15,7 +15,8 @@ int main(int __attribute__ ((unused)) ac, char **av)
 	}
 	else
 	{
-		nonInteractive_shell(av[0], av[1]);
+		/* non_interactive_shell(av[0], av[1]); */
+		nonInteractiveMode();
 	}
 	return (0);
 }
