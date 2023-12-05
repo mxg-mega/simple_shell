@@ -12,8 +12,7 @@ void nonInteractiveMode(char *program)
 	char *buffer = NULL, *delimiters = " \n";
 	size_t buffsize = (size_t)BUFF_SIZE;
 	cmd_t *head = NULL, *current = NULL;
-	pid_t childPIDs[MAX_ARGS + 1];
-	int i = 0, j = 0;
+	pid_t child;
 
 	buffer = malloc(sizeof(char) * buffsize);
 	if (buffer == NULL)
@@ -39,7 +38,7 @@ void nonInteractiveMode(char *program)
 	}
 
 	current = head;
-	while (current != NULL && i < MAX_ARGS + 1)
+	while (current != NULL)
 	{
 		char *dup = NULL, *token = NULL, *binary_path = NULL;
 		int i = 0;
@@ -71,7 +70,7 @@ void nonInteractiveMode(char *program)
 			free_args(args, MAX_ARGS);
 			break;
 		}
-		if ((childPIDs[i] = execute(binary_path, args, program)) == -1)
+		if ((child = execute(binary_path, args, program)) == -1)
 		{
 			free(dup);
 			free_args(args, MAX_ARGS);
@@ -82,18 +81,21 @@ void nonInteractiveMode(char *program)
 		free(dup);
 		free(binary_path);
 		free_args(args, MAX_ARGS);
-		i++;
 	}
 	printf("%d\n", countNode(head));
 
-	for (j = 0; j < i; j++)
+	if (child > 0)
 	{
 		int status;
 
-		if (waitpid(childPIDs[j], &status, 0) == -1)
+		if (waitpid(child, &status, 0) == -1)
 		{
-			perror("Waitpid failed");
+			perror("waitpid Failed\n");
+			free(buffer);
+			free_list(head);
 		}
+		free_list(head);
+		free(buffer);
 	}
 
 	free(buffer);
@@ -166,7 +168,7 @@ void trimWhitespaces(char *str)
 	for (i = 0; i <= end - start; i++)
 		str[i] = str[start + i];
 
-	str[end - start + 2] = '\0';
+	str[end - start + 1] = '\0';
 }
 
 /*	inputStatus = read(STDIN_FILENO, buffer, buffsize);
