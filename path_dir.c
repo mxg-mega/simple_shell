@@ -36,6 +36,10 @@ node_t *path_dir(char *varname)
 		}
 
 		newNode->dir = strdup(token);
+		if (newNode == NULL)
+		{
+			return (NULL);
+		}
 		newNode->node = NULL;
 
 		if (head == NULL)

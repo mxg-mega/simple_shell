@@ -11,7 +11,7 @@ void nonInteractiveMode(char *program)
 {
 	char *buffer = NULL, *delimiters = " \n";
 	size_t buffsize = (size_t)BUFF_SIZE;
-	pid_t child;
+	pid_t child = 0;
 	cmd_t *head = NULL, *current = NULL;
 
 	buffer = malloc(sizeof(char) * buffsize);
@@ -24,7 +24,6 @@ void nonInteractiveMode(char *program)
 	while (fgets(buffer, buffsize, stdin))
 	{
 		trimWhitespaces(buffer);
-
 		if (buffer[0] == '\0')
 		{
 			continue;
@@ -41,7 +40,7 @@ void nonInteractiveMode(char *program)
 	current = head;
 	while (current != NULL)
 	{
-		char *dup, *token;
+		char *dup = NULL, *token = NULL, *binary_path = NULL;
 		int i = 0;
 		char **args;
 
@@ -65,13 +64,13 @@ void nonInteractiveMode(char *program)
 			i++;
 			token = strtok(NULL, delimiters);
 		}
-		if (args[0] == NULL)
+		if ((binary_path = searchInPath(args[0])) == NULL)
 		{
 			free(dup);
 			free_args(args, MAX_ARGS);
 			break;
 		}
-		if ((child = execute(args[0], args, program)) == -1)
+		if ((child = execute(binary_path, args, program)) == -1)
 		{
 			free(dup);
 			free_args(args, MAX_ARGS);
@@ -80,6 +79,7 @@ void nonInteractiveMode(char *program)
 		printf("%s, %d\n", current->command, countArgs(current->command));
 		current = current->nextCmd;
 		free(dup);
+		free(binary_path);
 		free_args(args, MAX_ARGS);
 	}
 	printf("%d\n", countNode(head));
@@ -99,6 +99,7 @@ void nonInteractiveMode(char *program)
 	}
 	free(buffer);
 	free_list(head);
+	exit(EXIT_SUCCESS);
 }
 
 /**
@@ -108,7 +109,7 @@ void nonInteractiveMode(char *program)
  */
 int countArgs(char *cmd)
 {
-	char *token;
+	char *token = NULL;
 	int i = 0;
 
 	if (cmd == NULL)
@@ -126,7 +127,7 @@ int countArgs(char *cmd)
 
 int countNode(cmd_t *head)
 {
-	cmd_t *current;
+	cmd_t *current = NULL;
 	int count = 0;
 
 	current = head;
@@ -144,7 +145,7 @@ int countNode(cmd_t *head)
  */
 void trimWhitespaces(char *str)
 {
-	int start, end, len, i;
+	int start = 0, end = 0, len = 0, i = 0;
 
 	if (str == NULL)
 	{
@@ -166,7 +167,7 @@ void trimWhitespaces(char *str)
 	for (i = 0; i <= end - start; i++)
 		str[i] = str[start + i];
 
-	str[end - start + 1] = '\0';
+	str[end - start + 2] = '\0';
 }
 
 /*	inputStatus = read(STDIN_FILENO, buffer, buffsize);

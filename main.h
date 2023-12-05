@@ -32,6 +32,7 @@ typedef struct node
 } node_t;
 
 node_t *path_dir(char *varname);
+void free_node(node_t *head);
 
 cmd_t *addCommandNode(cmd_t **head, const char *newCommand);
 int countNode(cmd_t *head);

@@ -8,19 +8,26 @@
   */
 char *searchInPath(char *command)
 {
-	char *path = getenv("PATH");
-	char *token, *delim = " :\n", *file = NULL;
+	node_t *path = path_dir("PATH");
+	char *file = NULL;
 	int slashCount = 0;
 	struct stat fileInfo;
 
 	if (command == NULL)
 	{
 		perror("command is null\n");
+		free_node(path);
 		return (NULL);
 	}
 	if (command[0] == '/')
 	{
 		file = strdup(command);
+		if (file == NULL)
+		{
+			free_node(path);
+			return (NULL);
+		}
+		free_node(path);
 		return (file);
 	}
 	else
@@ -38,34 +45,48 @@ char *searchInPath(char *command)
 
 	if (slashCount == 0)
 	{
-		token = strtok(path, delim);
-		while (token != NULL)
+		node_t *current = NULL;
+
+		current = path;
+		while (current->node != NULL)
 		{
-			char *filepath = malloc(strlen(token) + strlen(command) + 2);
-			if (filepath == NULL)
+			char *dir_dup = strdup(current->dir);
+			char *filepath = malloc(strlen(current->dir) + strlen(command) + 2);
+
+			if (filepath == NULL || dir_dup == NULL)
 			{
-				perror("Unable to Allocate Memory for filepath\n");
+				perror("Unable to Allocate Memory for filepath or dir_dup\n");
+				free_node(path);
 				return (NULL);
 			}
-
-			sprintf(filepath, "%s/%s", token, command);
-
+			sprintf(filepath, "%s/%s", dir_dup, command);
 			printf("%s\n", filepath);
 			if (access(filepath, X_OK) == 0 && stat(filepath, &fileInfo) == 0)
 			{
 				file = strdup(filepath);
+				if (file == NULL)
+				{
+					free(filepath);
+					free(dir_dup);
+					free_node(path);
+					return (NULL);
+				}
 				free(filepath);
+				free(dir_dup);
 				break;
 			}
 			free(filepath);
-			token = strtok(NULL, delim);
+			free(dir_dup);
+			current = current->node;
 		}
 	}
 	else
 	{
 		free(file);
+		free_node(path);
 		return (strdup(command));
 	}
+	free_node(path);
 	return (file);
 }
 
