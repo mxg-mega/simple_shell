@@ -56,6 +56,6 @@ int execute(char *binary_path, char **args, char *program)
         }
     }
 
-    return (FAIL);
+    return (child);
 }
 

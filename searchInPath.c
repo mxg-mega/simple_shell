@@ -84,7 +84,7 @@ char *searchInPath(char *command)
 	{
 		free(file);
 		free_node(path);
-		return (strdup(command));
+		return (command);
 	}
 	free_node(path);
 	return (file);
